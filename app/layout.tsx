@@ -19,7 +19,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 const nav = [
   ["Home", "/"], ["Plan Your Visit", "/plan-your-visit"], ["About Us", "/about"], ["Ministries", "/ministries"],
-  ["Fellowships & Events", "/fellowships-events"], ["Give", "/give"], ["Contact", "/contact"],
+  ["What We Believe", "/what-we-believe"], ["Fellowships & Events", "/fellowships-events"], ["Give", "/give"], ["Contact", "/contact"],
 ];
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
