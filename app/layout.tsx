@@ -21,7 +21,7 @@ const primaryNav = [
   ["Home", "/"], ["Plan a Visit", "/plan-your-visit"], ["About", "/about"], ["Ministries", "/ministries"], ["Give", "/give"],
 ];
 const secondaryNav = [
-  ["What We Believe", "/what-we-believe"], ["Fellowships & Events", "/fellowships-events"], ["Contact", "/contact"],
+  ["What We Believe", "/what-we-believe"], ["Fellowships & Events", "/fellowships-events"], ["Text Updates", "/text"], ["Contact", "/contact"],
 ];
 const nav = [...primaryNav, ...secondaryNav];
 
