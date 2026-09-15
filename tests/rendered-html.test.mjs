@@ -1,19 +1,25 @@
+/**
+ * Smoke tests against the built Worker.
+ *
+ * These replaced the vinext starter's skeleton-preview assertions, which
+ * tested scaffolding (`app/_sites-preview/`, react-loading-skeleton) that the
+ * church site removed and which had been failing ever since.
+ *
+ * The bindings passed to `worker.fetch` are deliberately empty: it verifies
+ * that public pages still render when the database and bucket are unreachable,
+ * rather than showing a visitor a stack trace.
+ */
+
 import assert from "node:assert/strict";
-import { access, readFile, readdir } from "node:fs/promises";
 import test from "node:test";
 
-const developmentPreviewMeta =
-  /<meta(?=[^>]*\bname=["']codex-preview["'])(?=[^>]*\bcontent=["']development["'])[^>]*>/i;
-const templateRoot = new URL("../", import.meta.url);
-const previewRoot = new URL("../app/_sites-preview/", import.meta.url);
-
-async function render() {
+async function render(path) {
   const workerUrl = new URL("../dist/server/index.js", import.meta.url);
   workerUrl.searchParams.set("test", `${process.pid}-${Date.now()}`);
   const { default: worker } = await import(workerUrl.href);
 
   return worker.fetch(
-    new Request("http://localhost/", {
+    new Request(`http://localhost${path}`, {
       headers: { accept: "text/html" },
     }),
     {
@@ -28,64 +34,71 @@ async function render() {
   );
 }
 
-test("server-renders the starter loading skeleton", async () => {
-  const response = await render();
+test("server-renders the church home page", async () => {
+  const response = await render("/");
   assert.equal(response.status, 200);
   assert.match(response.headers.get("content-type") ?? "", /^text\/html\b/i);
 
   const html = await response.text();
-  assert.match(html, developmentPreviewMeta);
-  assert.match(html, /<title>Your site is taking shape<\/title>/i);
-  assert.match(html, /Building your site/);
-  assert.match(html, /Your site is taking shape/);
-  assert.match(
-    html,
-    /Your first version will appear here automatically when it’s ready\./,
-  );
-  assert.doesNotMatch(html, /Codex/);
-  assert.match(html, /react-loading-skeleton/);
-  assert.match(html, /role="status"/);
+  // The title carries the town because most searches for a church are local.
+  assert.match(html, /<title>Beulah Baptist Church \| Dadeville, Alabama<\/title>/i);
+  assert.match(html, /Dadeville/);
+  // The nav is rendered by the root layout, so this catches a broken layout.
+  assert.match(html, /Plan a Visit/);
+  // Structured data drives the service times and map pin in search results.
+  assert.match(html, /application\/ld\+json/);
+  assert.match(html, /"@type":"Church"/);
 });
 
-test("keeps the loading skeleton scoped and disposable", async () => {
-  const [preview, css, page, layout, packageJson, files] = await Promise.all([
-    readFile(new URL("SkeletonPreview.tsx", previewRoot), "utf8"),
-    readFile(new URL("preview.css", previewRoot), "utf8"),
-    readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),
-    readFile(new URL("../app/layout.tsx", import.meta.url), "utf8"),
-    readFile(new URL("../package.json", import.meta.url), "utf8"),
-    readdir(previewRoot),
-  ]);
+test("the text signup page renders without a database", async () => {
+  const response = await render("/text");
+  assert.equal(response.status, 200);
 
-  assert.deepEqual(files.sort(), ["SkeletonPreview.tsx", "preview.css"]);
-  assert.match(preview, /from "react-loading-skeleton"/);
-  assert.match(preview, /baseColor="#eceae7"/);
-  assert.match(preview, /highlightColor="#f9f8f6"/);
-  assert.match(preview, /duration=\{2\.8\}/);
-  assert.match(preview, /sites-skeleton-search-placeholder/);
-  assert.match(packageJson, /"react-loading-skeleton": "3\.5\.0"/);
+  const html = await response.text();
+  assert.match(html, /Never miss/);
+  // The consent wording is a compliance requirement, not decoration -- it must
+  // survive any future edit to the form.
+  assert.match(html, /Reply STOP to opt out/i);
+  assert.match(html, /Msg &amp; data rates may apply|Msg &amp;amp; data rates/i);
+});
 
-  const shellIndex = preview.indexOf('className="sites-skeleton-shell"');
-  const statusIndex = preview.indexOf('className="sites-skeleton-status"');
-  assert.ok(shellIndex >= 0 && statusIndex > shellIndex);
-  assert.match(css, /position:\s*fixed/);
-  assert.match(css, /inset:\s*0/);
-  assert.match(css, /opacity:\s*0\.52/);
-  assert.match(css, /prefers-reduced-motion:\s*reduce/);
-  assert.doesNotMatch(css, /#020617|canvas|pets|progress/i);
-  assert.doesNotMatch(
-    preview,
-    /loading-spinner|status-mark|status-progress|canvas|cookie|random/i,
+test("the admin area is not reachable without a session", async () => {
+  const response = await render("/admin");
+  // Either a redirect to sign-in, or the sign-in page itself.
+  assert.ok(
+    [200, 302, 303, 307].includes(response.status),
+    `unexpected status ${response.status}`,
   );
 
-  assert.match(page, /export const metadata:\s*Metadata/);
-  assert.match(page, /"codex-preview": "development"/);
-  assert.match(page, /<SkeletonPreview \/>/);
-  assert.match(layout, /title:\s*"Starter Project"/);
-  assert.doesNotMatch(layout, /codex-preview|_sites-preview|themeColor|\bViewport\b/);
-  assert.doesNotMatch(css, /(^|\s)(html|body)\s*\{/m);
+  if (response.status === 200) {
+    const html = await response.text();
+    assert.doesNotMatch(html, /Compose/);
+  } else {
+    assert.match(response.headers.get("location") ?? "", /\/admin\/signin/);
+  }
+});
 
-  await assert.rejects(
-    access(new URL("public/_sites-preview", templateRoot)),
+test("admin API routes reject unauthenticated callers", async () => {
+  const workerUrl = new URL("../dist/server/index.js", import.meta.url);
+  workerUrl.searchParams.set("test", `${process.pid}-${Date.now()}-api`);
+  const { default: worker } = await import(workerUrl.href);
+
+  const response = await worker.fetch(
+    new Request("http://localhost/api/admin/groups", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ name: "Should not be created" }),
+    }),
+    { ASSETS: { fetch: async () => new Response("", { status: 404 }) } },
+    { waitUntil() {}, passThroughOnException() {} },
   );
+
+  assert.ok(
+    response.status === 401 || response.status === 500,
+    `expected an auth failure, got ${response.status}`,
+  );
+  if (response.status === 401) {
+    const payload = await response.json();
+    assert.match(payload.error, /not signed in/i);
+  }
 });

@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
+import { SealLogo } from "../site-logo";
 import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "What We Believe",
   description: "A concise overview of the Baptist Faith and Message 2000 affirmed by Beulah Baptist Church.",
+  alternates: { canonical: "/what-we-believe" },
 };
 
 const articles = [
@@ -35,6 +37,6 @@ export default function WhatWeBelieve() {
       <div><p className="large-copy">Beulah Baptist Church is a Southern Baptist congregation. We affirm the Baptist Faith and Message 2000 as a faithful summary of our biblical convictions.</p><p>The overview below introduces its eighteen articles in clear, concise language. The official statement includes the complete wording and supporting Scripture references.</p><div className="button-row"><a className="button navy" href="https://bfm.sbc.net/bfm2000/" target="_blank" rel="noreferrer">Read the Official Statement ↗</a><Link className="button outline" href="/contact">Ask Us a Question</Link></div></div>
     </section>
     <section className="beliefs-section"><div className="wrap"><div className="section-heading"><p className="eyebrow">Eighteen articles of faith</p><h2>What we believe</h2><p>This is a brief overview; the official Baptist Faith and Message 2000 remains our complete statement.</p></div><div className="belief-article-grid">{articles.map(([number,title,copy]) => <article className="belief-article" key={number}><span>{number}</span><div><h3>{title}</h3><p>{copy}</p></div></article>)}</div></div></section>
-    <section className="section wrap visit-cta"><img src="/images/logo-seal.png" alt="Beulah Baptist Church seal" /><div><p className="eyebrow">Come learn with us</p><h2>Questions are welcome.</h2><p>We would be glad to talk with you about our faith, our church, or what it means to follow Jesus.</p></div><Link className="button gold" href="/plan-your-visit">Plan Your Visit</Link></section>
+    <section className="section wrap visit-cta"><SealLogo alt="Beulah Baptist Church seal" /><div><p className="eyebrow">Come learn with us</p><h2>Questions are welcome.</h2><p>We would be glad to talk with you about our faith, our church, or what it means to follow Jesus.</p></div><Link className="button gold" href="/plan-your-visit">Plan Your Visit</Link></section>
   </main>;
 }

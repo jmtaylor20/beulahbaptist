@@ -1,5 +1,21 @@
+import type { Metadata } from "next";
 import Link from "next/link";
+import { SealLogo } from "./site-logo";
 import { ContactForm } from "./ui";
+
+/**
+ * The home page previously exported no metadata, so it inherited the layout's
+ * generic title and had no canonical. Search results for a church are mostly
+ * people checking service times and location, so both are in the description.
+ */
+export const metadata: Metadata = {
+  title: {
+    absolute: "Beulah Baptist Church | Dadeville, Alabama",
+  },
+  description:
+    "A Southern Baptist church in Dadeville, Alabama. Sunday worship at 9:00 and 11:00 AM, Sunday School at 10:00 AM. Everyone is welcome.",
+  alternates: { canonical: "/" },
+};
 
 const ministryCards = [
   { title: "Children", copy: "Nursery, Children’s Church, AWANA, VBS & more", image: "/images/children.jpg", anchor: "children" },
@@ -68,7 +84,7 @@ export default function Home() {
         <div className="photo-card-grid">
           {ministryCards.map((card) => (
             <Link className="photo-card" href={`/ministries#${card.anchor}`} key={card.title}>
-              <img src={card.image} alt="" />
+              <img src={card.image} alt="" loading="lazy" decoding="async" />
               <div><span className="card-number">+</span><h3>{card.title}</h3><p>{card.copy}</p><b>Learn more →</b></div>
             </Link>
           ))}
@@ -97,7 +113,7 @@ export default function Home() {
       </section>
 
       <section className="section visit-cta wrap">
-        <img src="/images/logo-seal.png" alt="Beulah Baptist Church — established 1893" />
+        <SealLogo alt="Beulah Baptist Church — established 1893" />
         <div>
           <p className="eyebrow">Your first Sunday</p>
           <h2>We can’t wait to meet you.</h2>

@@ -4,3 +4,13 @@
 
 [build.environment]
   NODE_VERSION = "22"
+
+  # The site's canonical origin, read at build time by lib/site.ts.
+  #
+  # It sets metadataBase, the canonical URL on every page, the Open Graph and
+  # sitemap URLs, and the origin in robots.txt. Netlify injects its own URL
+  # variable, but that is the *.netlify.app deploy address, so search engines
+  # would be told the wrong canonical host. This pins the real domain.
+  #
+  # Not a secret: it is the public address of the site.
+  PUBLIC_BASE_URL = "https://beulahbaptistchurch.com"
