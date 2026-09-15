@@ -14,7 +14,7 @@ few business days to be approved, so start it first.
 - **Text and picture messages** to whole groups, with the cost shown before you
   press send
 - **Email newsletters** at effectively no cost
-- **Members sign themselves up** at `yourchurch.org/text` and manage their own
+- **Members sign themselves up** at `beulahbaptistchurch.com/text` and manage their own
   numbers, so the office is not keeping a spreadsheet
 - **STOP handled automatically**, with a permanent record of who consented,
   when, and how
@@ -61,7 +61,7 @@ Unregistered traffic gets filtered or blocked outright.
 3. Register a **Campaign** and pick the **Charity / 501(c)(3)** use case, which
    is the cheapest monthly fee available.
 4. For the campaign you must supply sample messages and describe how people opt
-   in. Point at `https://yourchurch.org/text` and paste the consent wording
+   in. Point at `https://beulahbaptistchurch.com/text` and paste the consent wording
    shown on that page.
 5. Create a **Messaging Service**, add your number to it, and attach the
    campaign. Turn on **Advanced Opt-Out** so Twilio handles STOP at the carrier
@@ -72,12 +72,16 @@ typically takes up to 5 business days.
 
 ## 4. Set the environment variables
 
-Set these in your hosting platform's settings. **Never commit them.**
+Set these in your hosting platform's settings. **Never commit the secrets** —
+tokens, keys, and `APP_SECRET` belong in the platform only.
+`PUBLIC_BASE_URL` is the one exception: it is the site's public address,
+not a secret, and is committed in `netlify.toml` so the canonical URLs are
+correct on every deploy.
 
 | Variable | Required | What it is |
 | --- | --- | --- |
 | `APP_SECRET` | **Yes** | Random string, 32+ characters. Generate with `openssl rand -base64 32`. Signs sign-in links and unsubscribe links. |
-| `PUBLIC_BASE_URL` | **Yes** | Your real public URL, e.g. `https://beulahbaptistdadeville.org`. Twilio fetches picture messages from here, so a wrong value means pictures silently fail. |
+| `PUBLIC_BASE_URL` | Already set | `https://beulahbaptistchurch.com`, set in `netlify.toml`. Twilio fetches picture messages from here, so a wrong value means pictures silently fail. Override it in the platform only if the domain changes. |
 | `ADMIN_BOOTSTRAP_EMAIL` | First run | Your email. Creates the first staff account (see step 5), then can be removed. |
 | `TWILIO_ACCOUNT_SID` | For texting | From the Twilio console. |
 | `TWILIO_AUTH_TOKEN` | For texting | From the Twilio console. Also verifies incoming webhooks. |
@@ -87,7 +91,7 @@ Set these in your hosting platform's settings. **Never commit them.**
 | `AWS_ACCESS_KEY_ID` | For email | From the IAM user in step 2. |
 | `AWS_SECRET_ACCESS_KEY` | For email | From the IAM user in step 2. |
 | `AWS_REGION` | For email | The SES region, e.g. `us-east-1`. |
-| `EMAIL_FROM` | For email | Verified sending address, e.g. `office@yourchurch.org`. |
+| `EMAIL_FROM` | For email | Verified sending address, e.g. `office@beulahbaptistchurch.com`. |
 | `CHURCH_NAME` | Optional | Defaults to "Beulah Baptist Church". |
 | `CHURCH_SHORT_NAME` | Optional | Used inside texts, where every character is billed. |
 | `CHURCH_HELP_CONTACT` | Optional | Phone number given in the HELP auto-reply. |
@@ -105,8 +109,8 @@ Set these in your hosting platform's settings. **Never commit them.**
 
 In the Twilio console, on your Messaging Service:
 
-- **Incoming messages** → `https://yourchurch.org/api/twilio/inbound`
-- **Delivery status callback** → `https://yourchurch.org/api/twilio/status`
+- **Incoming messages** → `https://beulahbaptistchurch.com/api/twilio/inbound`
+- **Delivery status callback** → `https://beulahbaptistchurch.com/api/twilio/status`
 
 Both verify Twilio's signature and reject anything unsigned, so they are safe
 to expose.

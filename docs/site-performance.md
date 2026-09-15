@@ -23,8 +23,10 @@ served by a function on every request.
 
 The origin now resolves once at build time in `lib/site.ts`, from
 `PUBLIC_BASE_URL`, falling back to Netlify's `URL` or Cloudflare's
-`CF_PAGES_URL`. Set `PUBLIC_BASE_URL` in production; the messaging app uses
-the same variable, so the two cannot drift.
+`CF_PAGES_URL`. It is pinned to `https://beulahbaptistchurch.com` in
+`netlify.toml`; without it Netlify would supply its own `*.netlify.app`
+deploy address and search engines would be told the wrong canonical host.
+The messaging app reads the same variable, so the two cannot drift.
 
 ### Images were camera-resolution
 
