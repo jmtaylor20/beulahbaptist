@@ -1,10 +1,24 @@
 @import "tailwindcss";
 
-:root { --navy:#062a52; --navy-2:#0b3c6d; --blue:#4b94cb; --gold:#d6a344; --cream:#f7f2e8; --paper:#fffdf9; --ink:#16263b; --muted:#5d6a7b; --line:#d9d4ca; --sans:"Avenir Next",Avenir,"Segoe UI",Helvetica,Arial,sans-serif; --display:Georgia,"Times New Roman",serif; }
+:root { --navy:#062a52; --navy-2:#0b3c6d; --blue:#4b94cb;
+  /* Text-weight blue. --blue is only 2.9:1 on the cream background, which
+     fails WCAG AA for body-size text; this darker tone is 5.2:1 on cream and
+     5.7:1 on paper while staying in the same family. Decorative uses of
+     --blue (focus rings, borders) only need 3:1 and are left alone. */
+  --blue-ink:#2f6a93; --gold:#d6a344; --cream:#f7f2e8; --paper:#fffdf9; --ink:#16263b; --muted:#5d6a7b; --line:#d9d4ca; --sans:"Avenir Next",Avenir,"Segoe UI",Helvetica,Arial,sans-serif; --display:Georgia,"Times New Roman",serif;
+  /* Header geometry. --header-block is what the hero uses to clear the
+     floating bar, so these three values are the only place header height
+     is defined. */
+  --header-top:14px; --header-h:104px; --brand-inset:10px; --header-block:calc(var(--header-top) + var(--header-h)); }
 * { box-sizing:border-box; }
 html { scroll-behavior:smooth; }
 body { margin:0; background:var(--paper); color:var(--ink); font-family:var(--sans); font-size:16px; font-weight:500; line-height:1.65; }
 a { color:inherit; text-decoration:none; }
+/* Keyboard users get a visible ring everywhere. Mouse users never see it. */
+:focus-visible { outline:3px solid var(--gold); outline-offset:2px; border-radius:2px; }
+/* Sits off-screen until focused, then becomes the first thing on the page. */
+.skip-link { position:fixed; top:8px; left:8px; z-index:100; padding:12px 18px; background:var(--navy); color:#fff; font-size:.8rem; font-weight:800; letter-spacing:.08em; text-transform:uppercase; border-radius:5px; transform:translateY(-150%); transition:transform .15s ease; }
+.skip-link:focus { transform:translateY(0); }
 img { display:block; max-width:100%; }
 .wrap { width:min(1180px, calc(100% - 40px)); margin-inline:auto; }
 h1,h2,h3 { font-family:var(--display); font-weight:700; line-height:1.06; margin:0 0 .7em; color:var(--navy); }
@@ -12,7 +26,7 @@ h1 { font-size:clamp(3.2rem, 8vw, 7rem); letter-spacing:-.035em; }
 h2 { font-size:clamp(2.25rem, 4.5vw, 4.1rem); letter-spacing:-.025em; }
 h3 { font-size:1.4rem; letter-spacing:-.012em; }
 p { margin:0 0 1.2em; }
-.eyebrow { margin:0 0 14px; color:var(--blue); font-size:.75rem; font-weight:800; letter-spacing:.2em; text-transform:uppercase; }
+.eyebrow { margin:0 0 14px; color:var(--blue-ink); font-size:.75rem; font-weight:800; letter-spacing:.2em; text-transform:uppercase; }
 .eyebrow.light { color:#b9dcf4; }
 .button-row { display:flex; flex-wrap:wrap; gap:12px; margin-top:30px; }
 .button { display:inline-flex; align-items:center; justify-content:center; min-height:54px; padding:0 26px; border:1px solid transparent; border-radius:999px; font-size:.8rem; font-weight:800; letter-spacing:.08em; text-transform:uppercase; transition:.2s ease; cursor:pointer; }
@@ -23,14 +37,29 @@ p { margin:0 0 1.2em; }
 .button.ghost { border-color:rgb(255 255 255 / .7); color:white; }
 .text-link { display:inline-flex; gap:10px; align-items:center; color:var(--navy); font-size:.8rem; font-weight:800; letter-spacing:.1em; text-transform:uppercase; border-bottom:1px solid var(--gold); padding-bottom:5px; }
 .text-link span { color:var(--gold); font-size:1.1rem; }
-.site-header { position:absolute; z-index:20; top:14px; left:0; right:0; }
-.header-inner { min-height:108px; display:flex; align-items:center; justify-content:space-between; gap:18px; padding:0 16px 0 0; overflow:visible; background:rgb(4 30 57 / .96); border-top:4px solid var(--gold); border-radius:7px; box-shadow:0 18px 45px rgb(3 24 46 / .3); }
-.brand { align-self:stretch; width:365px; display:flex; align-items:center; flex:0 0 auto; overflow:hidden; padding:7px 22px; background:white; border-radius:3px 0 0 3px; }
-.brand img { width:100%; height:88px; object-fit:contain; transform:scale(1.18); }
+/* --- Site header ---
+   The bar floats over the hero, so its height has to be known to the hero
+   below it. --header-block is that total, and the hero reads it instead of
+   repeating a hand-tuned padding value that has to be re-guessed whenever the
+   logo size changes. */
+.site-header { position:absolute; z-index:20; top:var(--header-top); left:0; right:0; }
+.header-inner { min-height:var(--header-h); display:flex; align-items:center; gap:clamp(12px, 2.2vw, 28px); padding:var(--brand-inset) 18px var(--brand-inset) var(--brand-inset); overflow:visible; background:rgb(4 30 57 / .96); border-top:4px solid var(--gold); border-radius:7px; box-shadow:0 18px 45px rgb(3 24 46 / .3); }
+/* The white card is inset on all four sides rather than stretched flush to
+   the bar's edges. Stretching it made its 3px corner notch against the bar's
+   7px radius and the gold top border, which is the overlap that read as a
+   misalignment. An inset card has no corner to collide. */
+/* The card hugs the logo instead of being given a fixed width, so it can
+   never be wider than its contents nor squeeze them. */
+.brand { flex:0 1 auto; min-width:0; display:flex; align-items:center; justify-content:center; padding:8px 18px; background:white; border-radius:4px; }
+.brand picture { display:flex; min-width:0; }
+/* Sized to fit its box. The previous rule scaled the logo 18% past the card
+   and relied on overflow:hidden, which cropped the artwork's edges. */
+.brand img { height:clamp(36px, 5.2vw, 56px); width:auto; max-width:100%; object-fit:contain; }
 .brand span,.footer-mark span { display:grid; line-height:1; }
 .brand strong,.footer-mark strong { font-size:1.5rem; font-weight:800; letter-spacing:.05em; text-transform:uppercase; }
 .brand small,.footer-mark small { margin-top:7px; color:#b9dcf4; font-size:.67rem; font-weight:800; letter-spacing:.18em; text-transform:uppercase; }
-.desktop-nav { display:flex; align-items:center; gap:2px; }
+.desktop-nav { display:flex; align-items:center; justify-content:flex-end; flex:1 1 auto; min-width:0; gap:2px; }
+.desktop-nav>a,.more-menu>summary { white-space:nowrap; }
 .desktop-nav>a,.more-menu>summary { color:white; font-size:.72rem; font-weight:800; letter-spacing:.065em; text-transform:uppercase; padding:15px 13px; border-radius:4px; }
 .desktop-nav>a:hover,.more-menu>summary:hover { color:#f2c467; background:rgb(255 255 255 / .08); }
 .desktop-nav>a[href="/give"] { margin-left:8px; padding-inline:20px; background:var(--gold); color:var(--navy); }
@@ -42,11 +71,11 @@ p { margin:0 0 1.2em; }
 .more-menu>div a { display:block; padding:12px 13px; color:var(--navy); font-size:.76rem; font-weight:750; border-bottom:1px solid var(--line); }
 .more-menu>div a:last-child { border-bottom:0; }
 .more-menu>div a:hover { background:var(--cream); }
-.mobile-menu { display:none; color:var(--navy); }
+.mobile-menu { display:none; margin-left:auto; color:var(--navy); }
 .hero { position:relative; min-height:690px; display:flex; align-items:center; overflow:hidden; background-size:cover; background-position:center; }
 .home-hero { min-height:min(860px, 94vh); background-image:url('/images/church-hero.jpg'); background-position:center 42%; }
 .hero-shade { position:absolute; inset:0; background:linear-gradient(90deg, rgb(3 22 44 / .88) 0%, rgb(3 26 51 / .61) 48%, rgb(3 25 47 / .18) 76%), linear-gradient(0deg, rgb(3 22 44 / .55), transparent 44%); }
-.hero-content { position:relative; z-index:2; padding-top:100px; color:white; }
+.hero-content { position:relative; z-index:2; padding-top:calc(var(--header-block) + 26px); color:white; }
 .hero-content h1 { color:white; max-width:760px; }
 .hero-content h1 em { display:block; color:#f1bd5e; font-style:italic; font-weight:700; }
 .hero-lead { max-width:640px; font-size:clamp(1.1rem, 2vw, 1.45rem); font-weight:600; line-height:1.5; }
@@ -79,7 +108,7 @@ p { margin:0 0 1.2em; }
 .photo-card>div { position:relative; padding:26px 24px 28px; }
 .photo-card h3 { margin-bottom:8px; }
 .photo-card p { color:var(--muted); font-size:.9rem; min-height:70px; }
-.photo-card b { color:var(--blue); font-size:.7rem; letter-spacing:.1em; text-transform:uppercase; }
+.photo-card b { color:var(--blue-ink); font-size:.7rem; letter-spacing:.1em; text-transform:uppercase; }
 .card-number { position:absolute; top:-22px; right:20px; width:43px; height:43px; display:grid; place-items:center; background:var(--navy); color:white; border-radius:50%; font-size:1.4rem; border:3px solid white; }
 .split-feature { display:grid; grid-template-columns:1.15fr .85fr; min-height:620px; background:var(--cream); }
 .split-image { background-size:cover; background-position:center; min-height:520px; }
@@ -103,19 +132,20 @@ p { margin:0 0 1.2em; }
 .church-form.compact { padding:26px; }
 .form-success { background:white; color:var(--ink); padding:40px; box-shadow:0 18px 55px rgb(0 0 0 / .15); }
 .form-success strong { color:var(--navy); font-size:1.5rem; }
-.form-success button { background:none; border:0; color:var(--blue); font-weight:800; cursor:pointer; padding:0; }
+.form-success button { background:none; border:0; color:var(--blue-ink); font-weight:800; cursor:pointer; padding:0; }
 .site-footer { background:#041e39; color:#c6d3df; padding:76px 0 25px; }
 .footer-grid { display:grid; grid-template-columns:1.35fr .85fr .9fr .7fr; gap:55px; }
-.footer-mark { display:flex; align-items:center; width:270px; margin-bottom:20px; padding:8px 12px; background:white; border-radius:4px; }
-.footer-mark img { width:100%; height:86px; object-fit:contain; }
+.footer-mark { display:flex; align-items:center; width:min(100%, 260px); margin-bottom:20px; padding:10px 14px; background:white; border-radius:4px; }
+.footer-mark picture { display:block; width:100%; }
+.footer-mark img { width:100%; height:auto; object-fit:contain; }
 .site-footer h3 { color:white; font-size:.73rem; font-weight:800; letter-spacing:.15em; text-transform:uppercase; }
 .site-footer p,.site-footer a { font-size:.88rem; }
 .site-footer a { display:block; color:#d9b464; margin:5px 0; }
 .footer-bottom { display:flex; justify-content:space-between; margin-top:55px; padding-top:20px; border-top:1px solid rgb(255 255 255 / .15); color:#7790a7; font-size:.76rem; }
 
 /* Interior pages */
-.interior-hero { min-height:470px; padding-top:100px; background-image:linear-gradient(90deg,rgb(3 24 46 / .88),rgb(3 26 51 / .35)),url('/images/church-aerial.jpg'); background-position:center 52%; }
-.interior-hero .hero-content { padding-top:105px; }
+.interior-hero { min-height:470px; background-image:linear-gradient(90deg,rgb(3 24 46 / .88),rgb(3 26 51 / .35)),url('/images/church-aerial.jpg'); background-position:center 52%; }
+.interior-hero .hero-content { padding-top:calc(var(--header-block) + 34px); }
 .interior-hero h1 { font-size:clamp(3rem,7vw,5.8rem); max-width:900px; }
 .breadcrumbs { color:#b8d2e7; text-transform:uppercase; letter-spacing:.13em; font-size:.68rem; font-weight:800; }
 .content-grid { display:grid; grid-template-columns:260px 1fr; gap:75px; }
@@ -177,14 +207,15 @@ p { margin:0 0 1.2em; }
   .side-nav a { padding:8px 12px; border:1px solid var(--line); background:white; }
 }
 @media (max-width:720px) {
+  :root { --header-top:8px; --header-h:84px; --brand-inset:8px; }
   .wrap { width:min(100% - 28px, 1180px); }
   .section { padding-block:75px; }
-  .site-header { position:absolute; top:8px; }
-  .header-inner { min-height:92px; padding:0 10px 0 0; gap:10px; }
-  .brand { width:min(72vw, 275px); padding:5px 14px; }
-  .brand img { width:100%; height:76px; transform:scale(1.16); }
+  .site-header { top:var(--header-top); }
+  .header-inner { padding:var(--brand-inset) 10px var(--brand-inset) var(--brand-inset); gap:10px; }
+  .brand { padding:6px 12px; }
+  .brand img { height:clamp(30px, 8.6vw, 44px); }
   .home-hero { min-height:760px; background-position:58% center; }
-  .hero-content { padding-top:70px; }
+  .hero-content { padding-top:calc(var(--header-block) + 16px); }
   .hero-content h1 { font-size:3.65rem; }
   .welcome-grid,.info-grid,.split-feature,.prayer-layout,.visit-cta,.content-grid,.ministry-layout,.contact-layout,.beliefs-intro { grid-template-columns:1fr; }
   .schedule-list { border-left:0; padding-left:0; }

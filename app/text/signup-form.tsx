@@ -221,7 +221,7 @@ export function SignupForm({
           </span>
         </label>
         <label>
-          Email <span style={{ opacity: 0.6 }}>(optional)</span>
+          Email <span className="optional-tag">(optional)</span>
           <input
             type="email"
             autoComplete="email"

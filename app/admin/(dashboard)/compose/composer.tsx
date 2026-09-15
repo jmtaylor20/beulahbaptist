@@ -365,7 +365,7 @@ export function Composer({
               </label>
 
               <label style={{ marginTop: 14 }}>
-                Picture <span style={{ opacity: 0.6 }}>(optional)</span>
+                Picture <span className="optional-tag">(optional)</span>
                 {media ? (
                   <div
                     style={{

@@ -40,10 +40,14 @@ test("server-renders the church home page", async () => {
   assert.match(response.headers.get("content-type") ?? "", /^text\/html\b/i);
 
   const html = await response.text();
-  assert.match(html, /<title>Beulah Baptist Church<\/title>/i);
+  // The title carries the town because most searches for a church are local.
+  assert.match(html, /<title>Beulah Baptist Church \| Dadeville, Alabama<\/title>/i);
   assert.match(html, /Dadeville/);
   // The nav is rendered by the root layout, so this catches a broken layout.
   assert.match(html, /Plan a Visit/);
+  // Structured data drives the service times and map pin in search results.
+  assert.match(html, /application\/ld\+json/);
+  assert.match(html, /"@type":"Church"/);
 });
 
 test("the text signup page renders without a database", async () => {

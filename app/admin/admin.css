@@ -205,6 +205,10 @@ body:has(.admin-shell) {
   outline-offset: 1px;
   border-color: var(--blue);
 }
+/* A muted colour rather than opacity. Fading text with opacity blends it
+   toward the background and drops it below the WCAG AA contrast threshold. */
+.optional-tag { color: var(--muted); font-weight: 600; }
+
 .admin-form .hint {
   display: block;
   margin-top: 6px;

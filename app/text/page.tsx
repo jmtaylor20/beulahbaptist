@@ -8,6 +8,7 @@ export const metadata: Metadata = {
   title: "Get text updates",
   description:
     "Sign up to receive text message updates from Beulah Baptist Church.",
+  alternates: { canonical: "/text" },
 };
 
 // Group options come from the database on each request.
