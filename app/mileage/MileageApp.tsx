@@ -32,7 +32,7 @@ const COMMON_PLACES = [
 const DEFAULT_SETTINGS: Settings = {
   name: "Pastor Timothy R. Davis",
   recipients: "beulahbaptist@ymail.com, treasurer.beulahbaptist@gmail.com",
-  rate: "",
+  rate: "0.76",
 };
 
 const today = () => {
@@ -84,7 +84,10 @@ function loadSaved(): { trips: Trip[]; settings: Settings; storageOk: boolean } 
   try {
     const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) ?? "null");
     localStorage.setItem(`${STORAGE_KEY}-check`, "1");
-    return { trips: saved?.trips ?? [], settings: { ...DEFAULT_SETTINGS, ...saved?.settings }, storageOk: true };
+    const settings = { ...DEFAULT_SETTINGS, ...saved?.settings };
+    // Phones set up before the church rate was added saved a blank rate.
+    if (!settings.rate) settings.rate = DEFAULT_SETTINGS.rate;
+    return { trips: saved?.trips ?? [], settings, storageOk: true };
   } catch {
     return { trips: [], settings: DEFAULT_SETTINGS, storageOk: false };
   }
@@ -466,8 +469,8 @@ export default function MileageApp() {
             <textarea rows={2} value={settings.recipients} onChange={(e) => setSettings((s) => ({ ...s, recipients: e.target.value }))} />
           </label>
           <label className="ml-field">
-            <span>Rate per mile <em>(optional, adds a dollar total)</em></span>
-            <input type="number" inputMode="decimal" step="0.001" min="0" placeholder="e.g. 0.70" value={settings.rate} onChange={(e) => setSettings((s) => ({ ...s, rate: e.target.value }))} />
+            <span>Rate per mile <em>(adds a dollar total; 0 for miles only)</em></span>
+            <input type="number" inputMode="decimal" step="0.001" min="0" placeholder="0.76" value={settings.rate} onChange={(e) => setSettings((s) => ({ ...s, rate: e.target.value }))} />
           </label>
           <p className="ml-hint">Trips are saved on this phone only. Always open the log from the home-screen icon, since Safari keeps a separate copy.</p>
         </details>
