@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ContactForm } from "./ui";
+import { EventPopup } from "./EventPopup";
 
 const ministryCards = [
   { title: "Children", copy: "Nursery, Children’s Church, AWANA, VBS & more", image: "/images/children.jpg", anchor: "children" },
@@ -11,6 +12,7 @@ const ministryCards = [
 export default function Home() {
   return (
     <main>
+      <EventPopup />
       <section className="hero home-hero">
         <div className="hero-shade" />
         <div className="hero-content wrap">
