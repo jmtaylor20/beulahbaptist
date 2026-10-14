@@ -1,10 +1,10 @@
 "use client";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import { fallBingoIsActive } from "./events/fallBingo";
 
-// Shown once per calendar day on the home page until the event is over.
+// Shown once per calendar day on the home page until the event comes down.
 const STORAGE_KEY = "beulah-popup-fall-bingo-2026";
-const LAST_SHOW_DAY = "2026-10-17";
 
 function today() {
   const now = new Date();
@@ -17,7 +17,7 @@ export function EventPopup() {
 
   useEffect(() => {
     const day = today();
-    if (day > LAST_SHOW_DAY) return;
+    if (!fallBingoIsActive()) return;
     let seen: string | null = null;
     try { seen = localStorage.getItem(STORAGE_KEY); } catch {}
     if (seen === day) return;

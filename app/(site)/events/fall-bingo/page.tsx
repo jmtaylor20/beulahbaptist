@@ -1,5 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { notFound } from "next/navigation";
+import { fallBingoIsActive } from "../fallBingo";
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Fall Bingo Fundraiser",
@@ -10,6 +14,7 @@ export const metadata: Metadata = {
 const mapsUrl = "https://www.google.com/maps/search/?api=1&query=4191+Hwy+50+Dadeville+AL";
 
 export default function FallBingo() {
+  if (!fallBingoIsActive()) notFound();
   return (
     <main>
       <section className="hero interior-hero">
