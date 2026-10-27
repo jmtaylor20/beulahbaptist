@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
+import { canonical } from "../../site-url";
 import { ContactForm } from "../ui";
 
-export const metadata: Metadata = { title: "Plan Your Visit", description: "What to expect when you visit Beulah Baptist Church." };
+export const metadata: Metadata = { title: "Plan Your Visit", description: "What to expect when you visit Beulah Baptist Church.", alternates: canonical("/plan-your-visit") };
 
 const items = [
   ["A warm welcome", "Friendly people will be nearby to help, but you won’t be singled out or put on the spot."],

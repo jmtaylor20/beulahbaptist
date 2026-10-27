@@ -1,6 +1,10 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { ContactForm } from "./ui";
 import { EventPopup } from "./EventPopup";
+import { canonical } from "../site-url";
+
+export const metadata: Metadata = { alternates: canonical("/") };
 
 const ministryCards = [
   { title: "Children", copy: "Nursery, Children’s Church, AWANA, VBS & more", image: "/images/children.jpg", anchor: "children" },

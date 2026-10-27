@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
+import { canonical } from "../../site-url";
 import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "What We Believe",
   description: "A concise overview of the Baptist Faith and Message 2000 affirmed by Beulah Baptist Church.",
+  alternates: canonical("/what-we-believe"),
 };
 
 const articles = [

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
+import { canonical } from "../../site-url";
 import Link from "next/link";
-export const metadata: Metadata = { title: "About Us", description: "The mission, beliefs, leadership, and history of Beulah Baptist Church." };
+export const metadata: Metadata = { title: "About Us", description: "The mission, beliefs, leadership, and history of Beulah Baptist Church.", alternates: canonical("/about") };
 export default function About() { return <main>
   <section className="hero interior-hero"><div className="hero-content wrap"><p className="breadcrumbs">Home / About Us</p><h1>Rooted in truth.<br />Growing in grace.</h1></div></section>
   <section className="section wrap content-grid"><aside className="side-nav"><a href="#mission">Our Mission</a><Link href="/what-we-believe">What We Believe</Link><a href="#pastor">Our Pastor</a><a href="#history">Church History</a></aside><article className="article">
