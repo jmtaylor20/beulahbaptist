@@ -4,3 +4,53 @@
 
 [build.environment]
   NODE_VERSION = "22"
+
+# Old church domains: send every page to the same path on beulahbaptistchurch.com.
+
+[[redirects]]
+  from = "https://bbcdadeville.com/*"
+  to = "https://beulahbaptistchurch.com/:splat"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "http://bbcdadeville.com/*"
+  to = "https://beulahbaptistchurch.com/:splat"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "https://www.bbcdadeville.com/*"
+  to = "https://beulahbaptistchurch.com/:splat"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "http://www.bbcdadeville.com/*"
+  to = "https://beulahbaptistchurch.com/:splat"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "https://bbcdadeville.org/*"
+  to = "https://beulahbaptistchurch.com/:splat"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "http://bbcdadeville.org/*"
+  to = "https://beulahbaptistchurch.com/:splat"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "https://www.bbcdadeville.org/*"
+  to = "https://beulahbaptistchurch.com/:splat"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "http://www.bbcdadeville.org/*"
+  to = "https://beulahbaptistchurch.com/:splat"
+  status = 301
+  force = true
