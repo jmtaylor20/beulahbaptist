@@ -62,7 +62,7 @@
 .ma-contact a.light { background:var(--cream); color:var(--navy); }
 
 .ma-form { display:grid; gap:14px; }
-.ma-form label,.ma-field { display:grid; gap:6px; color:var(--navy); font-size:.7rem; font-weight:800; letter-spacing:.08em; text-transform:uppercase; }
+.ma-form label,.ma-field { display:grid; min-width:0; gap:6px; color:var(--navy); font-size:.7rem; font-weight:800; letter-spacing:.08em; text-transform:uppercase; }
 .ma-form input,.ma-form textarea,.ma-form select,.ma-field input,.ma-field select,.ma-field textarea { width:100%; border:1px solid #c9d1d8; border-radius:10px; background:#fff; color:var(--ink); padding:12px 13px; font:inherit; font-size:1rem; letter-spacing:0; text-transform:none; }
 .ma-form input:focus,.ma-form textarea:focus,.ma-form select:focus { outline:3px solid rgb(75 148 203 / .25); border-color:var(--blue); }
 .ma-form .row { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
@@ -156,7 +156,7 @@
 }
 
 /* Photo cropper */
-.ma-cropper { display:grid; gap:10px; justify-items:center; margin-top:10px; padding:14px; background:var(--cream); border-radius:12px; }
+.ma-cropper { display:grid; gap:10px; justify-items:center; margin-top:10px; width:100%; max-width:100%; box-sizing:border-box; padding:14px; background:var(--cream); border-radius:12px; }
 .ma-cropper canvas { width:260px; height:260px; border-radius:50%; background:#dbe8f1; box-shadow:0 0 0 4px white, 0 0 0 5px var(--line); cursor:grab; }
 .ma-cropper label { width:100%; display:grid; gap:4px; font-size:.7rem; font-weight:800; letter-spacing:.08em; text-transform:uppercase; color:var(--navy); }
 .ma-cropper input[type=range] { width:100%; }

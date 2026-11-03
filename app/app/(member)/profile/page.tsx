@@ -67,7 +67,7 @@ export default async function Profile({ searchParams }: { searchParams: Promise<
           {h ? (
             <>
               <label>Family name in the directory<input name="household_name" defaultValue={h.name} required /></label>
-              <div style={{ display: "flex", gap: 16, alignItems: "center" }}>
+              <div style={{ display: "flex", gap: 16, alignItems: "center", flexWrap: "wrap" }}>
                 <Avatar name={h.name} src={photos.get(h.photo_path ?? "") ?? null} />
                 <label style={{ flex: 1 }}>Family photo<PhotoInput name="household_photo" crop="square" /></label>
               </div>
@@ -81,7 +81,7 @@ export default async function Profile({ searchParams }: { searchParams: Promise<
 
         <section className="ma-card">
           <h2>You</h2>
-          <div style={{ display: "flex", gap: 16, alignItems: "center", marginBottom: 14 }}>
+          <div style={{ display: "flex", gap: 16, alignItems: "center", marginBottom: 14, flexWrap: "wrap" }}>
             <Avatar name={fullName(person)} src={photos.get(person.photo_path ?? "") ?? null} size="lg" />
             <label style={{ flex: 1 }}>Your photo<PhotoInput name="photo" crop="square" /></label>
           </div>
