@@ -12,7 +12,8 @@ export async function signIn(form: FormData) {
   const { error } = await supabase.auth.signInWithPassword({ email: text(form, "email"), password: text(form, "password") });
   if (error) bounce(`${b}/login`, { error: "That email and password did not match." });
   await ensurePerson(); // signup cannot create the people row while email confirmation is on
-  redirect(b || "/");
+  const { data: me } = await supabase.from("people").select("is_admin,status").eq("auth_user_id", (await supabase.auth.getUser()).data.user!.id).maybeSingle();
+  redirect(me?.is_admin && me.status === "active" ? `${b}/choose` : b || "/");
 }
 
 export async function signOut() {

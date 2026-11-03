@@ -13,4 +13,5 @@ begin
   return hid;
 end $$;
 
-drop policy if exists households_signup on households;
+-- households_signup from 002 is left in place; it is harmless and dropping
+-- it needs a manual confirmation in the dashboard.

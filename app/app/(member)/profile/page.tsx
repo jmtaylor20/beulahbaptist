@@ -38,13 +38,15 @@ export default async function Profile({ searchParams }: { searchParams: Promise<
   const person = await requireMember();
   const b = await base();
   const supabase = await supabaseServer();
-  const [{ data: household }, { data: familyRows }] = await Promise.all([
+  const [{ data: household }, { data: familyRows }, { data: otherLogins }] = await Promise.all([
     person.household_id ? supabase.from("households").select("*").eq("id", person.household_id).maybeSingle() : Promise.resolve({ data: null }),
     person.household_id ? supabase.from("people").select("*").eq("household_id", person.household_id).is("auth_user_id", null).order("created_at") : Promise.resolve({ data: [] }),
+    person.household_id ? supabase.from("directory").select("id,first_name,last_name,role,photo_path").eq("household_id", person.household_id).neq("id", person.id) : Promise.resolve({ data: [] }),
   ]);
   const h = household as Household | null;
   const family = (familyRows ?? []) as Person[];
-  const photos = await photoUrls([person.photo_path, h?.photo_path, ...family.map((m) => m.photo_path)]);
+  const withLogin = ((otherLogins ?? []) as { id: string; first_name: string; last_name: string; role: string; photo_path: string | null }[]).filter((o) => !family.some((m) => m.id === o.id));
+  const photos = await photoUrls([person.photo_path, h?.photo_path, ...family.map((m) => m.photo_path), ...withLogin.map((o) => o.photo_path)]);
   const sp = await searchParams;
   const emails = [person.email, ...family.map((m) => m.email)].filter(Boolean).length;
 
@@ -96,6 +98,12 @@ export default async function Profile({ searchParams }: { searchParams: Promise<
 
       <h2 style={{ marginTop: 30 }}>Family members</h2>
       <p className="ma-lead">Each person can have their own email and phone. {emails === 1 ? "Right now the weekly email goes to one address." : `The weekly email goes to all ${emails} addresses on file.`}</p>
+      {withLogin.map((o) => (
+        <div key={o.id} className="ma-card flat" style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          <Avatar name={`${o.first_name} ${o.last_name}`} src={photos.get(o.photo_path ?? "") ?? null} size="sm" />
+          <span><strong style={{ color: "var(--navy)" }}>{o.first_name} {o.last_name}</strong> <span className="ma-badge blue">own login</span><br /><small style={{ color: "var(--muted)" }}>Edits their own details from their login.</small></span>
+        </div>
+      ))}
       {family.map((m) => (
         <details key={m.id} className="ma-card">
           <summary style={{ cursor: "pointer", display: "flex", alignItems: "center", gap: 12 }}>
