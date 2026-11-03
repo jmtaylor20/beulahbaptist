@@ -1,0 +1,14 @@
+{
+  "name": "Beulah Baptist Church Members",
+  "short_name": "Beulah",
+  "description": "Directory, prayer requests, calendar and announcements for Beulah Baptist Church members.",
+  "start_url": "/app",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#f7f2e8",
+  "theme_color": "#062a52",
+  "icons": [
+    { "src": "/images/mileage-icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/images/mileage-icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}
