@@ -12,7 +12,7 @@ export default async function AnnouncementsAdmin({ searchParams }: { searchParam
   const status = sp.status ?? "approved";
   const supabase = await supabaseServer();
   const [{ data }, counts] = await Promise.all([
-    supabase.from("announcements").select("id,kind,title,status,starts_on,ends_on,created_at,people(first_name,last_name)").eq("status", status).order("created_at", { ascending: false }).limit(200),
+    supabase.from("announcements").select("id,kind,title,status,starts_on,ends_on,created_at,people!submitted_by(first_name,last_name)").eq("status", status).order("created_at", { ascending: false }).limit(200),
     Promise.all(["suggested", "draft", "approved", "archived"].map((s) => supabase.from("announcements").select("id", { count: "exact", head: true }).eq("status", s).then((r) => r.count ?? 0))),
   ]);
   return (
