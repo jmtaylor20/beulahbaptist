@@ -13,7 +13,7 @@ export async function proxy(request: NextRequest) {
   const url = request.nextUrl;
   const onAppHost = APP_HOSTS.test(request.headers.get("host") ?? "");
   const requestHeaders = new Headers(request.headers);
-  requestHeaders.set("x-app-base", onAppHost ? "" : "/app");
+  requestHeaders.set("x-app-base", onAppHost ? "root" : "/app");
 
   let response: NextResponse;
   if (onAppHost && !url.pathname.startsWith("/app") && !url.pathname.startsWith("/_next") && !url.pathname.startsWith("/images") && !url.pathname.startsWith("/api")) {
