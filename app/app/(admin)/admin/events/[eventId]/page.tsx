@@ -16,7 +16,7 @@ export default async function EventAdmin({ params, searchParams }: { params: Pro
   const sp = await searchParams;
   const isNew = eventId === "new";
   const supabase = await supabaseServer();
-  const { data } = isNew ? { data: null } : await supabase.from("events").select("*,people(first_name,last_name),event_rsvps(headcount,people(first_name,last_name))").eq("id", eventId).maybeSingle();
+  const { data } = isNew ? { data: null } : await supabase.from("events").select("*,people!submitted_by(first_name,last_name),event_rsvps(headcount,people(first_name,last_name))").eq("id", eventId).maybeSingle();
   if (!isNew && !data) notFound();
   const e = data ?? { id: "", title: "", description: "", location: "", starts_at: null, ends_at: null, all_day: false, image_path: null, rsvp_enabled: false, status: "approved", people: null, event_rsvps: [] };
   const by = e.people as unknown as { first_name: string; last_name: string } | null;
