@@ -1,5 +1,5 @@
 "use server";
-import { redirect } from "next/navigation";
+import { redirect } from "next/navigation"; import { isRedirectError } from "next/dist/client/components/redirect-error";
 import { base, fmtDate, fmtTime, monthDay, publicMediaUrl, requireAdmin } from "../../../../lib/members";
 import { supabaseServer } from "../../../../lib/supabase/server";
 import { approvalEmail, renderNewsletter, sendBulk, sendEmail, type NewsletterData } from "../../../../lib/email";
@@ -63,7 +63,7 @@ export async function savePerson(form: FormData) {
       bounce(`${b}/admin/people/${data.id}`, { ok: "Added." });
     }
   } catch (e) {
-    if ((e as Error).message === "NEXT_REDIRECT") throw e;
+    if (isRedirectError(e)) throw e;
     bounce(`${b}/admin/people/${id || "new"}`, { error: (e as Error).message });
   }
 }
@@ -133,7 +133,7 @@ export async function saveAnnouncement(form: FormData) {
       bounce(`${b}/admin/announcements/${data.id}`, { ok: "Created." });
     }
   } catch (e) {
-    if ((e as Error).message === "NEXT_REDIRECT") throw e;
+    if (isRedirectError(e)) throw e;
     bounce(`${b}/admin/announcements/${id || "new"}`, { error: (e as Error).message });
   }
   bounce(`${b}/admin/announcements/${id}`, { ok: form.get("approve") ? "Approved. It is live in the app and ready for the next email." : "Saved." });
@@ -198,7 +198,7 @@ export async function saveEvent(form: FormData) {
       bounce(`${b}/admin/events/${data.id}`, { ok: "Created." });
     }
   } catch (e) {
-    if ((e as Error).message === "NEXT_REDIRECT") throw e;
+    if (isRedirectError(e)) throw e;
     bounce(`${b}/admin/events/${id || "new"}`, { error: (e as Error).message });
   }
   bounce(`${b}/admin/events/${id}`, { ok: "Saved." });
@@ -280,7 +280,7 @@ export async function previewNewsletter(form: FormData) {
   const saved = id ? await supabase.from("newsletters").update(row).eq("id", id).select("id").single() : await supabase.from("newsletters").insert(row).select("id").single();
   if (form.get("test")) {
     try { await sendEmail(me.email!, `[Test] ${data.subject}`, html); bounce(`${b}/admin/newsletter/${saved.data?.id}`, { ok: `Test sent to ${me.email}.` }); }
-    catch (e) { bounce(`${b}/admin/newsletter/${saved.data?.id}`, { error: (e as Error).message }); }
+    catch (e) { if (isRedirectError(e)) throw e; bounce(`${b}/admin/newsletter/${saved.data?.id}`, { error: (e as Error).message }); }
   }
   bounce(`${b}/admin/newsletter/${saved.data?.id}`, { ok: "Draft saved. Preview below." });
 }
@@ -299,6 +299,6 @@ export async function sendNewsletter(form: FormData) {
     await supabase.from("newsletters").update({ sent_at: new Date().toISOString(), recipient_count: count }).eq("id", id);
     bounce(`${b}/admin/newsletter`, { ok: `Sent to ${count} members.` });
   } catch (e) {
-    bounce(`${b}/admin/newsletter/${id}`, { error: (e as Error).message });
+    if (isRedirectError(e)) throw e; bounce(`${b}/admin/newsletter/${id}`, { error: (e as Error).message });
   }
 }
