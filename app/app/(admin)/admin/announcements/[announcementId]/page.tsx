@@ -14,7 +14,7 @@ export default async function AnnouncementAdmin({ params, searchParams }: { para
   const sp = await searchParams;
   const isNew = announcementId === "new";
   const supabase = await supabaseServer();
-  const { data } = isNew ? { data: null } : await supabase.from("announcements").select("*,people(first_name,last_name),serving_signups(note,people(first_name,last_name))").eq("id", announcementId).maybeSingle();
+  const { data } = isNew ? { data: null } : await supabase.from("announcements").select("*,people!submitted_by(first_name,last_name),serving_signups(note,people(first_name,last_name))").eq("id", announcementId).maybeSingle();
   if (!isNew && !data) notFound();
   const a = data ?? { id: "", kind: sp.kind === "serving" ? "serving" : "announcement", title: "", body: "", body_original: null, image_path: null, link_url: "", starts_on: "", ends_on: "", slots: null, status: "draft", people: null, serving_signups: [] };
   const by = a.people as unknown as { first_name: string; last_name: string } | null;
