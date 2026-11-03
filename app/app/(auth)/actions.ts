@@ -11,7 +11,8 @@ export async function signIn(form: FormData) {
   const supabase = await supabaseServer();
   const { error } = await supabase.auth.signInWithPassword({ email: text(form, "email"), password: text(form, "password") });
   if (error) bounce(`${b}/login`, { error: "That email and password did not match." });
-  redirect(b || "/");
+  await ensurePerson(); // signup cannot create the people row while email confirmation is on
+redirect(b || "/");
 }
 
 export async function signOut() {
