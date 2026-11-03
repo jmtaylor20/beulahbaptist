@@ -1,5 +1,5 @@
 -- Beulah Baptist members app: schema, row-level security, storage.
--- Applied to the Supabase project as a migration. Keep this file in sync with
+-- Applied to Supabase project beulah-baptist-app (wknfrawtizirxsaldwlp) on 2026-11-03. Keep this file in sync with
 -- the live database; later changes go in 002_, 003_, and so on.
 
 create extension if not exists "pgcrypto";
@@ -191,6 +191,10 @@ create trigger announcements_touch before update on announcements for each row e
 -- ---------------------------------------------------------------------------
 -- Directory view: what members see of each other. Fields the person set to
 -- "church" come through as null. Admins read the people table directly.
+-- The view deliberately runs as its owner (Supabase's linter flags this as a
+-- "security definer view"): members only have row access to their own people
+-- row, and the view is the one sanctioned way to see everyone else, already
+-- masked and limited to active members.
 -- ---------------------------------------------------------------------------
 
 create view directory as
