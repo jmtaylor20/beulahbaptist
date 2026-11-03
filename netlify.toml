@@ -54,3 +54,13 @@
   to = "https://beulahbaptistchurch.com/:splat"
   status = 301
   force = true
+
+# Members app: app.beulahbaptistchurch.com and app.bbcdadeville.com serve the
+# /app routes at their root. proxy.ts does the rewrite; these rules just keep
+# the old domain pointed at the new one.
+
+[[redirects]]
+  from = "https://app.bbcdadeville.com/*"
+  to = "https://app.beulahbaptistchurch.com/:splat"
+  status = 301
+  force = true
