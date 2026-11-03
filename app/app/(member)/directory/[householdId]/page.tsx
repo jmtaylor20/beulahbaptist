@@ -47,7 +47,6 @@ export default async function HouseholdPage({ params }: { params: Promise<{ hous
             <div>
               <strong>{m.first_name} {m.last_name}</strong> {m.is_minor && <span className="ma-badge">child</span>}
               {m.birthday && <p>🎂 {monthDay(m.birthday)}</p>}
-              {m.bio && <p>{m.bio}</p>}
               {!m.is_minor && <ContactButtons phone={m.phone} email={m.email} />}
             </div>
           </div>

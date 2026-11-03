@@ -29,7 +29,7 @@ export async function updateProfile(form: FormData) {
     const photo_path = (await upload("member-photos", person.id, form.get("photo") as File | null)) ?? person.photo_path;
     const { error } = await supabase.from("people").update({
       first_name: text(form, "first_name") || person.first_name, last_name: text(form, "last_name") || person.last_name,
-      email: opt(form, "email"), phone: opt(form, "phone"), birthday: opt(form, "birthday"), bio: opt(form, "bio"), photo_path,
+      email: opt(form, "email"), phone: opt(form, "phone"), birthday: opt(form, "birthday"), photo_path,
       show_email: vis(form, "show_email"), show_phone: vis(form, "show_phone"), show_birthday: vis(form, "show_birthday"), show_address: vis(form, "show_address"),
       bible_translation: text(form, "bible_translation") || person.bible_translation,
     }).eq("id", person.id);
@@ -52,7 +52,7 @@ const memberFields = (form: FormData, person: { last_name: string }) => {
   return {
     first_name: text(form, "first_name"), last_name: text(form, "last_name") || person.last_name, role,
     is_minor: role === "child" || form.get("is_minor") === "on",
-    email: opt(form, "email"), phone: opt(form, "phone"), birthday: opt(form, "birthday"), bio: opt(form, "bio"),
+    email: opt(form, "email"), phone: opt(form, "phone"), birthday: opt(form, "birthday"),
     show_email: vis(form, "show_email"), show_phone: vis(form, "show_phone"), show_birthday: vis(form, "show_birthday"), show_address: vis(form, "show_address"),
   };
 };

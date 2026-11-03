@@ -154,3 +154,10 @@
   .ma-form .row { grid-template-columns:1fr; }
   .ma-grid.tiles { grid-template-columns:1fr 1fr; }
 }
+
+/* Photo cropper */
+.ma-cropper { display:grid; gap:10px; justify-items:center; margin-top:10px; padding:14px; background:var(--cream); border-radius:12px; }
+.ma-cropper canvas { width:260px; height:260px; border-radius:50%; background:#dbe8f1; box-shadow:0 0 0 4px white, 0 0 0 5px var(--line); cursor:grab; }
+.ma-cropper label { width:100%; display:grid; gap:4px; font-size:.7rem; font-weight:800; letter-spacing:.08em; text-transform:uppercase; color:var(--navy); }
+.ma-cropper input[type=range] { width:100%; }
+.ma-cropper .hint { margin:0; text-align:center; }

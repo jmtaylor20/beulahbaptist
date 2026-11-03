@@ -46,7 +46,7 @@ export async function savePerson(form: FormData) {
   try {
     const row = {
       first_name: text(form, "first_name"), last_name: text(form, "last_name"), household_id: opt(form, "household_id"), role: text(form, "role") || "other",
-      email: opt(form, "email"), phone: opt(form, "phone"), birthday: opt(form, "birthday"), bio: opt(form, "bio"), admin_notes: opt(form, "admin_notes"),
+      email: opt(form, "email"), phone: opt(form, "phone"), birthday: opt(form, "birthday"), admin_notes: opt(form, "admin_notes"),
       is_minor: on(form, "is_minor"), is_admin: on(form, "is_admin"), status: text(form, "status") || "active",
       show_email: text(form, "show_email"), show_phone: text(form, "show_phone"), show_birthday: text(form, "show_birthday"), show_address: text(form, "show_address"),
     };

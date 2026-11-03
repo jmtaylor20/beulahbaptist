@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   description: "Member directory, prayer, calendar and announcements for Beulah Baptist Church.",
   robots: { index: false, follow: false },
   manifest: "/app.webmanifest",
-  icons: { icon: "/images/logo-seal.png", apple: "/images/mileage-icon-180.png" },
+  icons: { icon: "/images/app-icon-192.png", apple: "/images/app-icon-180.png" },
   appleWebApp: { capable: true, title: "Beulah", statusBarStyle: "black-translucent" },
 };
 

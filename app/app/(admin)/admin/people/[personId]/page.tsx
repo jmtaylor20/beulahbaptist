@@ -50,8 +50,7 @@ export default async function PersonAdmin({ params, searchParams }: { params: Pr
             <label>Role in household<select name="role" defaultValue={p.role}><option value="head">Head</option><option value="spouse">Spouse</option><option value="child">Child</option><option value="other">Other</option></select></label>
           </div>
           <div className="row"><label>Email<input name="email" type="email" defaultValue={p.email ?? ""} /></label><label>Phone<input name="phone" type="tel" defaultValue={p.phone ?? ""} /></label></div>
-          <div className="row"><label>Birthday<input name="birthday" type="date" defaultValue={p.birthday ?? ""} /></label><label>Photo<PhotoInput name="photo" /></label></div>
-          <label>Bio (shown to members)<textarea name="bio" rows={2} defaultValue={p.bio ?? ""} /></label>
+          <div className="row"><label>Birthday<input name="birthday" type="date" defaultValue={p.birthday ?? ""} /></label><label>Photo<PhotoInput name="photo" crop="square" /></label></div>
           <label>Office notes (never shown to members)<textarea name="admin_notes" rows={3} defaultValue={p.admin_notes ?? ""} /></label>
           <div className="row">
             <label className="check"><input type="checkbox" name="is_minor" defaultChecked={p.is_minor} /> Child (listed with family only)</label>

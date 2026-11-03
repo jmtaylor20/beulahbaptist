@@ -21,7 +21,6 @@ export default async function PersonPage({ params }: { params: Promise<{ personI
           <Avatar name={`${m.first_name} ${m.last_name}`} src={await photoUrl(m.photo_path)} size="lg" />
           <h1 style={{ marginBottom: 0 }}>{m.first_name} {m.last_name}</h1>
           {m.birthday && <p className="ma-lead" style={{ marginBottom: 0 }}>🎂 {monthDay(m.birthday)}</p>}
-          {m.bio && <p>{m.bio}</p>}
         </div>
         <div style={{ display: "flex", justifyContent: "center" }}><ContactButtons phone={m.phone} email={m.email} /></div>
       </section>

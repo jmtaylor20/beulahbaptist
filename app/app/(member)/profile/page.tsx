@@ -27,18 +27,22 @@ function MemberFields({ m, last }: { m?: Person; last: string }) {
       </div>
       <label>Who they are<select name="role" defaultValue={m?.role ?? "spouse"}><option value="spouse">Spouse</option><option value="child">Child</option><option value="other">Other family member</option></select><span className="hint">Children are listed with the family only and never shown outside the church.</span></label>
       <Vis name="show_phone" value={m?.show_phone ?? "church"} label="Mobile phone"><input name="phone" type="tel" defaultValue={m?.phone ?? ""} /></Vis>
-      <Vis name="show_email" value={m?.show_email ?? "church"} label="Email"><input name="email" type="email" defaultValue={m?.email ?? ""} /></Vis>
-      <Vis name="show_birthday" value={m?.show_birthday ?? "church"} label="Birthday"><input name="birthday" type="date" defaultValue={m?.birthday ?? ""} /></Vis>
-      <label>Photo<PhotoInput name="photo" /></label>
-      <label>A little about them<textarea name="bio" rows={2} defaultValue={m?.bio ?? ""} /></label>
+      <Vis name="show_email" value={m?.show_email ?? "members"} label="Email"><input name="email" type="email" defaultValue={m?.email ?? ""} /></Vis>
+      <Vis name="show_birthday" value={m?.show_birthday ?? "members"} label="Birthday"><input name="birthday" type="date" defaultValue={m?.birthday ?? ""} /></Vis>
+      <label>Photo<PhotoInput name="photo" crop="square" /></label>
     </>
   );
 }
 
 export default async function Profile({ searchParams }: { searchParams: Promise<{ ok?: string; error?: string }> }) {
-  const person = await requireMember();
+  let person = await requireMember();
   const b = await base();
   const supabase = await supabaseServer();
+  if (!person.household_id) {
+    // Approved before households existed, or something went wrong at signup.
+    await supabase.rpc("signup_household", { p_name: `The ${person.last_name} Family` });
+    person = (await requireMember());
+  }
   const [{ data: household }, { data: familyRows }, { data: otherLogins }] = await Promise.all([
     person.household_id ? supabase.from("households").select("*").eq("id", person.household_id).maybeSingle() : Promise.resolve({ data: null }),
     person.household_id ? supabase.from("people").select("*").eq("household_id", person.household_id).is("auth_user_id", null).order("created_at") : Promise.resolve({ data: [] }),
@@ -54,7 +58,7 @@ export default async function Profile({ searchParams }: { searchParams: Promise<
   return (
     <>
       <h1>Your family</h1>
-      <p className="ma-lead">One login for your whole household. The church office keeps the full record; you choose what other members can see about each of you.</p>
+      <p className="ma-lead">One login for your whole household. The church office keeps the full record; you choose what other members can see about each of you. Birthdays show as month and day only.</p>
       <Notice searchParams={sp} />
 
       <form className="ma-form" action={updateProfile} encType="multipart/form-data">
@@ -65,7 +69,7 @@ export default async function Profile({ searchParams }: { searchParams: Promise<
               <label>Family name in the directory<input name="household_name" defaultValue={h.name} required /></label>
               <div style={{ display: "flex", gap: 16, alignItems: "center" }}>
                 <Avatar name={h.name} src={photos.get(h.photo_path ?? "") ?? null} />
-                <label style={{ flex: 1 }}>Family photo<PhotoInput name="household_photo" /></label>
+                <label style={{ flex: 1 }}>Family photo<PhotoInput name="household_photo" crop="square" /></label>
               </div>
               <Vis name="show_address" value={person.show_address} label="Street address"><input name="address" defaultValue={h.address ?? ""} /></Vis>
               <div className="row"><label>City<input name="city" defaultValue={h.city ?? ""} /></label><label>ZIP<input name="zip" defaultValue={h.zip ?? ""} /></label></div>
@@ -79,7 +83,7 @@ export default async function Profile({ searchParams }: { searchParams: Promise<
           <h2>You</h2>
           <div style={{ display: "flex", gap: 16, alignItems: "center", marginBottom: 14 }}>
             <Avatar name={fullName(person)} src={photos.get(person.photo_path ?? "") ?? null} size="lg" />
-            <label style={{ flex: 1 }}>Your photo<PhotoInput name="photo" capture="user" /></label>
+            <label style={{ flex: 1 }}>Your photo<PhotoInput name="photo" crop="square" /></label>
           </div>
           <div className="row">
             <label>First name<input name="first_name" defaultValue={person.first_name} required /></label>
@@ -88,7 +92,6 @@ export default async function Profile({ searchParams }: { searchParams: Promise<
           <Vis name="show_phone" value={person.show_phone} label="Mobile phone"><input name="phone" type="tel" defaultValue={person.phone ?? ""} /></Vis>
           <Vis name="show_email" value={person.show_email} label="Email"><input name="email" type="email" defaultValue={person.email ?? ""} /></Vis>
           <Vis name="show_birthday" value={person.show_birthday} label="Birthday"><input name="birthday" type="date" defaultValue={person.birthday ?? ""} /></Vis>
-          <label>A little about you<textarea name="bio" rows={3} defaultValue={person.bio ?? ""} placeholder="Sunday school class, where you work, what you love about Beulah" /></label>
           <label>Bible translation for daily reading<select name="bible_translation" defaultValue={person.bible_translation}>{Object.entries(TRANSLATIONS).map(([k, t]) => <option key={k} value={k}>{t.name} ({k})</option>)}</select></label>
         </section>
         <div className="ma-actions">
