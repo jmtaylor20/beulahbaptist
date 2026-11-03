@@ -21,7 +21,7 @@ export default async function AdminShell({ children }: { children: React.ReactNo
         <img src="/images/logo-seal.png" alt="" />
         <Link href={`${b}/admin`} className="ma-title"><strong>Admin portal</strong><small>Beulah Baptist</small></Link>
         <span className="ma-spacer" />
-        <Link href={b || "/"} className="button small quiet" style={{ marginRight: 8 }}>Member view</Link>
+        <Link href={b || "/"} className="button small quiet ma-top-link">Member view</Link>
         <Link href={`${b}/profile`} className="ma-me" aria-label="Your profile"><Avatar name={fullName(person)} src={await photoUrl(person.photo_path)} size="sm" /></Link>
       </header>
       <div className="ma-shell">

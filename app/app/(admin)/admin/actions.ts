@@ -1,6 +1,7 @@
 "use server";
-import { redirect } from "next/navigation"; import { isRedirectError } from "next/dist/client/components/redirect-error";
-import { base, fmtDate, fmtTime, monthDay, publicMediaUrl, requireAdmin } from "../../../../lib/members";
+import { redirect } from "next/navigation";
+import { isRedirectError } from "next/dist/client/components/redirect-error";
+import { base, centralToIso, fmtDate, fmtTime, monthDay, publicMediaUrl, requireAdmin } from "../../../../lib/members";
 import { supabaseServer } from "../../../../lib/supabase/server";
 import { approvalEmail, renderNewsletter, sendBulk, sendEmail, type NewsletterData } from "../../../../lib/email";
 import { polishAnnouncement } from "../../../../lib/polish";
@@ -9,7 +10,6 @@ const text = (form: FormData, key: string) => String(form.get(key) ?? "").trim()
 const opt = (form: FormData, key: string) => text(form, key) || null;
 const on = (form: FormData, key: string) => form.get(key) === "on";
 const bounce = (path: string, params: Record<string, string>) => redirect(`${path}?${new URLSearchParams(params)}`);
-const toIso = (local: string) => (local ? new Date(`${local}:00-06:00`).toISOString() : null);
 
 async function upload(bucket: "member-photos" | "public-media", folder: string, file: File | null) {
   if (!file || !file.size) return null;
@@ -185,7 +185,7 @@ export async function saveEvent(form: FormData) {
     const image_path = await upload("public-media", "events/admin", form.get("image") as File | null);
     const row = {
       title: text(form, "title"), description: opt(form, "description"), location: opt(form, "location"),
-      starts_at: toIso(text(form, "starts_at")), ends_at: toIso(text(form, "ends_at")), all_day: on(form, "all_day"), rsvp_enabled: on(form, "rsvp_enabled"),
+      starts_at: centralToIso(text(form, "starts_at")), ends_at: centralToIso(text(form, "ends_at")), all_day: on(form, "all_day"), rsvp_enabled: on(form, "rsvp_enabled"),
       status: form.get("approve") ? "approved" : text(form, "status") || "approved", ...(image_path ? { image_path } : {}),
     };
     if (!row.title || !row.starts_at) throw new Error("A title and start time are needed.");

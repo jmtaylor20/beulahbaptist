@@ -1,6 +1,6 @@
 "use server";
 import { redirect } from "next/navigation";
-import { base, requireMember } from "../../../lib/members";
+import { base, centralToIso, requireMember } from "../../../lib/members";
 import { supabaseServer } from "../../../lib/supabase/server";
 
 const text = (form: FormData, key: string) => String(form.get(key) ?? "").trim();
@@ -105,7 +105,7 @@ export async function suggestEvent(form: FormData) {
   if (!text(form, "title") || !date) bounce(`${b}/calendar`, { error: "A title and date are needed." });
   await supabase.from("events").insert({
     title: text(form, "title"), description: opt(form, "description"), location: opt(form, "location"),
-    starts_at: new Date(`${date}T${time || "12:00"}:00-06:00`).toISOString(), all_day: !time, status: person.is_admin ? "approved" : "suggested", submitted_by: person.id,
+    starts_at: centralToIso(`${date}T${time || "12:00"}`), all_day: !time, status: person.is_admin ? "approved" : "suggested", submitted_by: person.id,
   });
   bounce(`${b}/calendar`, { ok: person.is_admin ? "Event added." : "Thanks. The church office will review your suggestion." });
 }

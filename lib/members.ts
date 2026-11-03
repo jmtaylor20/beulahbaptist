@@ -56,6 +56,20 @@ export const fmtDate = (value: string | null | undefined, opts: Intl.DateTimeFor
 
 export const fmtTime = (value: string) => new Date(value).toLocaleTimeString("en-US", { timeZone: "America/Chicago", hour: "numeric", minute: "2-digit" });
 
+// Turns a datetime-local value typed in Central time into an ISO string,
+// using the right offset for that date (CST or CDT).
+export function centralToIso(local: string) {
+  if (!local) return null;
+  const [date, time = "12:00"] = local.split("T");
+  const [y, m, d] = date.split("-").map(Number);
+  const [hh, mm] = time.split(":").map(Number);
+  const guess = Date.UTC(y, m - 1, d, hh, mm);
+  const parts = new Intl.DateTimeFormat("en-US", { timeZone: "America/Chicago", hour12: false, year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" }).formatToParts(new Date(guess));
+  const get = (t: string) => Number(parts.find((p) => p.type === t)?.value);
+  const shown = Date.UTC(get("year"), get("month") - 1, get("day"), get("hour") % 24, get("minute"));
+  return new Date(guess + (guess - shown)).toISOString();
+}
+
 // Birthdays and anniversaries are shown without the year.
 export const monthDay = (value: string | null | undefined) => fmtDate(value, { month: "long", day: "numeric" });
 
