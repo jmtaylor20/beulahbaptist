@@ -4,6 +4,7 @@ import { base, publicMediaUrl, requireAdmin } from "../../../../../../lib/member
 import { supabaseServer } from "../../../../../../lib/supabase/server";
 import { Notice } from "../../../../ui";
 import { deleteAnnouncement, polish, revertPolish, saveAnnouncement } from "../../actions";
+import { PhotoInput } from "../../../../PhotoInput";
 
 export const metadata = { title: "Announcement" };
 
@@ -42,7 +43,7 @@ export default async function AnnouncementAdmin({ params, searchParams }: { para
           )}
           {changed && <div className="ma-diff"><div><b>Original</b>{a.body_original}</div><div><b>Current</b>{a.body}</div></div>}
           {publicMediaUrl(a.image_path) && <img src={publicMediaUrl(a.image_path)!} alt="" style={{ maxWidth: 360, borderRadius: 10 }} />}
-          <label>Picture or flyer<input name="image" type="file" accept="image/*" /></label>
+          <label>Picture or flyer<PhotoInput name="image" /></label>
           <label>Link<input name="link_url" type="url" defaultValue={a.link_url ?? ""} placeholder="https://" /></label>
           <div className="row"><label>Show from<input name="starts_on" type="date" defaultValue={a.starts_on ?? ""} /></label><label>Until<input name="ends_on" type="date" defaultValue={a.ends_on ?? ""} /><span className="hint">Drops out of the app and email after this date.</span></label></div>
           <label>Spots needed (serving only)<input name="slots" type="number" min={1} defaultValue={a.slots ?? ""} /></label>

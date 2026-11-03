@@ -4,6 +4,7 @@ import { base, requireAdmin, type Household, type Person } from "../../../../../
 import { supabaseServer } from "../../../../../../../lib/supabase/server";
 import { Notice } from "../../../../../ui";
 import { deleteHousehold, saveHousehold } from "../../../actions";
+import { PhotoInput } from "../../../../../PhotoInput";
 
 export const metadata = { title: "Household" };
 
@@ -33,7 +34,7 @@ export default async function HouseholdAdmin({ params, searchParams }: { params:
         <input type="hidden" name="id" value={hh.id} />
         <section className="ma-card">
           <label>Household name<input name="name" defaultValue={hh.name} required /></label>
-          <label>Family photo<input name="photo" type="file" accept="image/*" /></label>
+          <label>Family photo<PhotoInput name="photo" /></label>
           <label>Street address<input name="address" defaultValue={hh.address ?? ""} /></label>
           <div className="row"><label>City<input name="city" defaultValue={hh.city ?? ""} /></label><label>State<input name="state" defaultValue={hh.state ?? "AL"} /></label></div>
           <div className="row"><label>ZIP<input name="zip" defaultValue={hh.zip ?? ""} /></label><label>Home phone<input name="home_phone" type="tel" defaultValue={hh.home_phone ?? ""} /></label></div>

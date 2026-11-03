@@ -4,6 +4,7 @@ import { base, fmtDate, fullName, photoUrl, requireAdmin, type Person } from "..
 import { supabaseServer } from "../../../../../../lib/supabase/server";
 import { Avatar, Notice } from "../../../../ui";
 import { deletePerson, savePerson, setStatus } from "../../actions";
+import { PhotoInput } from "../../../../PhotoInput";
 
 export const metadata = { title: "Person" };
 
@@ -49,7 +50,7 @@ export default async function PersonAdmin({ params, searchParams }: { params: Pr
             <label>Role in household<select name="role" defaultValue={p.role}><option value="head">Head</option><option value="spouse">Spouse</option><option value="child">Child</option><option value="other">Other</option></select></label>
           </div>
           <div className="row"><label>Email<input name="email" type="email" defaultValue={p.email ?? ""} /></label><label>Phone<input name="phone" type="tel" defaultValue={p.phone ?? ""} /></label></div>
-          <div className="row"><label>Birthday<input name="birthday" type="date" defaultValue={p.birthday ?? ""} /></label><label>Photo<input name="photo" type="file" accept="image/*" /></label></div>
+          <div className="row"><label>Birthday<input name="birthday" type="date" defaultValue={p.birthday ?? ""} /></label><label>Photo<PhotoInput name="photo" /></label></div>
           <label>Bio (shown to members)<textarea name="bio" rows={2} defaultValue={p.bio ?? ""} /></label>
           <label>Office notes (never shown to members)<textarea name="admin_notes" rows={3} defaultValue={p.admin_notes ?? ""} /></label>
           <div className="row">

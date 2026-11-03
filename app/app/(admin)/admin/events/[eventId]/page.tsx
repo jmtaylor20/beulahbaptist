@@ -4,6 +4,7 @@ import { base, publicMediaUrl, requireAdmin } from "../../../../../../lib/member
 import { supabaseServer } from "../../../../../../lib/supabase/server";
 import { Notice } from "../../../../ui";
 import { deleteEvent, saveEvent } from "../../actions";
+import { PhotoInput } from "../../../../PhotoInput";
 
 export const metadata = { title: "Event" };
 
@@ -34,7 +35,7 @@ export default async function EventAdmin({ params, searchParams }: { params: Pro
           <label>Location<input name="location" defaultValue={e.location ?? ""} /></label>
           <label>Description<textarea name="description" rows={4} defaultValue={e.description ?? ""} /></label>
           {publicMediaUrl(e.image_path) && <img src={publicMediaUrl(e.image_path)!} alt="" style={{ maxWidth: 320, borderRadius: 10 }} />}
-          <label>Picture or flyer<input name="image" type="file" accept="image/*" /></label>
+          <label>Picture or flyer<PhotoInput name="image" /></label>
           <div className="row">
             <label className="check"><input type="checkbox" name="all_day" defaultChecked={e.all_day} /> All day</label>
             <label className="check"><input type="checkbox" name="rsvp_enabled" defaultChecked={e.rsvp_enabled} /> Allow RSVP</label>

@@ -2,6 +2,7 @@ import { fmtDate, publicMediaUrl, requireMember } from "../../../../lib/members"
 import { supabaseServer } from "../../../../lib/supabase/server";
 import { Empty, Notice } from "../../ui";
 import { suggestAnnouncement } from "../actions";
+import { PhotoInput } from "../../PhotoInput";
 
 export const metadata = { title: "Announcements" };
 
@@ -32,7 +33,7 @@ export default async function Announcements({ searchParams }: { searchParams: Pr
           <input type="hidden" name="kind" value="announcement" />
           <label>Title<input name="title" required /></label>
           <label>Details<textarea name="body" rows={4} placeholder="Who, what, when, where" /></label>
-          <label>Picture or flyer<input name="image" type="file" accept="image/*" /></label>
+          <label>Picture or flyer<PhotoInput name="image" /></label>
           <label>Link<input name="link_url" type="url" placeholder="https://" /></label>
           <div className="row"><label>Show from<input name="starts_on" type="date" /></label><label>Until<input name="ends_on" type="date" /></label></div>
           <button className="button gold" type="submit">{me.is_admin ? "Post announcement" : "Send suggestion"}</button>

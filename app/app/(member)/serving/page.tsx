@@ -2,6 +2,7 @@ import { fmtDate, publicMediaUrl, requireMember } from "../../../../lib/members"
 import { supabaseServer } from "../../../../lib/supabase/server";
 import { Empty, Notice } from "../../ui";
 import { suggestAnnouncement, toggleServing } from "../actions";
+import { PhotoInput } from "../../PhotoInput";
 
 export const metadata = { title: "Serving" };
 
@@ -48,7 +49,7 @@ export default async function Serving({ searchParams }: { searchParams: Promise<
           <label>What is needed<input name="title" required placeholder="Nursery helpers for Sunday morning" /></label>
           <label>Details<textarea name="body" rows={3} /></label>
           <div className="row"><label>Date<input name="starts_on" type="date" /></label><label>How many people<input name="slots" type="number" min={1} /></label></div>
-          <label>Picture<input name="image" type="file" accept="image/*" /></label>
+          <label>Picture<PhotoInput name="image" /></label>
           <button className="button gold" type="submit">{me.is_admin ? "Post sign-up" : "Send suggestion"}</button>
         </form>
       </details>

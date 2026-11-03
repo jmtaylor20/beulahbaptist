@@ -4,6 +4,7 @@ import { supabaseServer } from "../../../../lib/supabase/server";
 import { TRANSLATIONS } from "../../../../lib/devotion";
 import { Avatar, Notice } from "../../ui";
 import { addFamilyMember, removeFamilyMember, updateFamilyMember, updateProfile } from "../actions";
+import { PhotoInput } from "../../PhotoInput";
 
 export const metadata = { title: "Your family" };
 
@@ -28,7 +29,7 @@ function MemberFields({ m, last }: { m?: Person; last: string }) {
       <Vis name="show_phone" value={m?.show_phone ?? "church"} label="Mobile phone"><input name="phone" type="tel" defaultValue={m?.phone ?? ""} /></Vis>
       <Vis name="show_email" value={m?.show_email ?? "church"} label="Email"><input name="email" type="email" defaultValue={m?.email ?? ""} /></Vis>
       <Vis name="show_birthday" value={m?.show_birthday ?? "church"} label="Birthday"><input name="birthday" type="date" defaultValue={m?.birthday ?? ""} /></Vis>
-      <label>Photo<input name="photo" type="file" accept="image/*" /></label>
+      <label>Photo<PhotoInput name="photo" /></label>
       <label>A little about them<textarea name="bio" rows={2} defaultValue={m?.bio ?? ""} /></label>
     </>
   );
@@ -64,7 +65,7 @@ export default async function Profile({ searchParams }: { searchParams: Promise<
               <label>Family name in the directory<input name="household_name" defaultValue={h.name} required /></label>
               <div style={{ display: "flex", gap: 16, alignItems: "center" }}>
                 <Avatar name={h.name} src={photos.get(h.photo_path ?? "") ?? null} />
-                <label style={{ flex: 1 }}>Family photo<input name="household_photo" type="file" accept="image/*" /></label>
+                <label style={{ flex: 1 }}>Family photo<PhotoInput name="household_photo" /></label>
               </div>
               <Vis name="show_address" value={person.show_address} label="Street address"><input name="address" defaultValue={h.address ?? ""} /></Vis>
               <div className="row"><label>City<input name="city" defaultValue={h.city ?? ""} /></label><label>ZIP<input name="zip" defaultValue={h.zip ?? ""} /></label></div>
@@ -78,7 +79,7 @@ export default async function Profile({ searchParams }: { searchParams: Promise<
           <h2>You</h2>
           <div style={{ display: "flex", gap: 16, alignItems: "center", marginBottom: 14 }}>
             <Avatar name={fullName(person)} src={photos.get(person.photo_path ?? "") ?? null} size="lg" />
-            <label style={{ flex: 1 }}>Your photo<input name="photo" type="file" accept="image/*" capture="user" /></label>
+            <label style={{ flex: 1 }}>Your photo<PhotoInput name="photo" capture="user" /></label>
           </div>
           <div className="row">
             <label>First name<input name="first_name" defaultValue={person.first_name} required /></label>
