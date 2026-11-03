@@ -13,7 +13,7 @@ export default async function More() {
     ["🙌", "Serving", "Sign up where help is needed", "/serving"],
     ["📝", "Forms", "Visitor card, membership, benevolence, facility use", "/forms"],
     ["💛", "Give", "Secure online giving through Tithe.ly", "/give"],
-    ["👤", "Your profile", "Photo, contact details, what members can see", "/profile"],
+    ["👤", "Your family", "Photos, family members, contact details, what members can see", "/profile"],
   ];
   return (
     <>

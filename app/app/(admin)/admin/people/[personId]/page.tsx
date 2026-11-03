@@ -32,7 +32,7 @@ export default async function PersonAdmin({ params, searchParams }: { params: Pr
       {p.status === "pending" && (
         <section className="ma-card navy">
           <h2>Access request · {fmtDate(p.created_at)}</h2>
-          <p>Attach {p.first_name} to a household below (or create one on the People page), then approve. They get an email saying their account is ready.</p>
+          <p>Approve {p.first_name} and they get an email saying the family login is ready. Their household was created at signup; they add spouse and children themselves from their profile.</p>
           <div className="ma-actions">
             <form action={setStatus}><input type="hidden" name="id" value={p.id} /><input type="hidden" name="status" value="active" /><button className="button gold" type="submit">Approve</button></form>
             <form action={setStatus}><input type="hidden" name="id" value={p.id} /><input type="hidden" name="status" value="declined" /><button className="button ghost" type="submit">Decline</button></form>
@@ -53,7 +53,7 @@ export default async function PersonAdmin({ params, searchParams }: { params: Pr
           <label>Bio (shown to members)<textarea name="bio" rows={2} defaultValue={p.bio ?? ""} /></label>
           <label>Office notes (never shown to members)<textarea name="admin_notes" rows={3} defaultValue={p.admin_notes ?? ""} /></label>
           <div className="row">
-            <label className="check"><input type="checkbox" name="is_minor" defaultChecked={p.is_minor} /> Child (no login, listed with family only)</label>
+            <label className="check"><input type="checkbox" name="is_minor" defaultChecked={p.is_minor} /> Child (listed with family only)</label>
             <label className="check"><input type="checkbox" name="is_admin" defaultChecked={p.is_admin} /> Church admin</label>
           </div>
           <label>Status<select name="status" defaultValue={p.status}><option value="pending">Pending</option><option value="active">Active</option><option value="inactive">Inactive</option><option value="declined">Declined</option></select></label>

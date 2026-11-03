@@ -20,7 +20,7 @@ export default async function Pending() {
         ) : declined ? (
           <p className="ma-lead">The church office was not able to approve this account. If you think that is a mistake, call the church at 256-825-6515.</p>
         ) : (
-          <p className="ma-lead">Thank you, {person.first_name}. The church office will review your request and you will get an email when your account is ready. This usually takes a day or two.</p>
+          <p className="ma-lead">Thank you, {person.first_name}. The church office will review your request and you will get an email when your family&rsquo;s login is ready. This usually takes a day or two. After that you can add your spouse and children from your profile.</p>
         )}
         <form action={signOut} className="ma-actions" style={{ justifyContent: "center" }}><button className="button quiet" type="submit">Sign out</button></form>
       </div>

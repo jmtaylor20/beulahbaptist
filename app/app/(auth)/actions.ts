@@ -12,7 +12,7 @@ export async function signIn(form: FormData) {
   const { error } = await supabase.auth.signInWithPassword({ email: text(form, "email"), password: text(form, "password") });
   if (error) bounce(`${b}/login`, { error: "That email and password did not match." });
   await ensurePerson(); // signup cannot create the people row while email confirmation is on
-redirect(b || "/");
+  redirect(b || "/");
 }
 
 export async function signOut() {
@@ -22,8 +22,9 @@ export async function signOut() {
   redirect(`${b}/login`);
 }
 
-// New member request: creates the login and a pending people row. An admin
-// approves it from the portal before the person can see anything.
+// New family request: one login per household. Creates the login, the
+// household, and a pending people row for the person signing up. An admin
+// approves it from the portal; after that they add the rest of the family.
 export async function requestAccess(form: FormData) {
   const b = await base();
   const supabase = await supabaseServer();
@@ -32,31 +33,35 @@ export async function requestAccess(form: FormData) {
   const first = text(form, "first_name"), last = text(form, "last_name");
   if (!first || !last || !email || password.length < 8) bounce(`${b}/signup`, { error: "Please fill in every field. Passwords need at least 8 characters." });
 
-  const { data, error } = await supabase.auth.signUp({ email, password, options: { data: { first_name: first, last_name: last } } });
+  const { data, error } = await supabase.auth.signUp({ email, password, options: { data: { first_name: first, last_name: last, phone: text(form, "phone"), request_note: text(form, "request_note"), family_name: text(form, "family_name") } } });
   if (error || !data.user) bounce(`${b}/signup`, { error: error?.message ?? "Could not create your account." });
 
-  // With email confirmation on, there is no session yet; the people row is
+  // With email confirmation on, there is no session yet; the rows are
   // created on first sign-in instead (see ensurePerson).
-  if (data.session) await ensurePerson({ first, last, email, phone: text(form, "phone"), note: text(form, "request_note") });
-  else await supabase.auth.updateUser({ data: { phone: text(form, "phone"), request_note: text(form, "request_note") } }).catch(() => {});
+  if (data.session) await ensurePerson();
   redirect(`${b}/pending`);
 }
 
-// Creates the pending people row for the signed-in user if it is missing.
-export async function ensurePerson(overrides?: { first: string; last: string; email: string; phone?: string; note?: string }) {
+// Creates the household and pending people row for the signed-in login if
+// they are missing. Safe to call on every sign-in.
+export async function ensurePerson() {
   const supabase = await supabaseServer();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return;
   const { data: existing } = await supabase.from("people").select("id").eq("auth_user_id", user.id).maybeSingle();
   if (existing) return;
   const meta = user.user_metadata ?? {};
+  const last = meta.last_name ?? "";
+  const { data: householdId } = await supabase.rpc("signup_household", { p_name: meta.family_name || (last ? `The ${last} Family` : "New family") });
   await supabase.from("people").insert({
     auth_user_id: user.id,
-    first_name: overrides?.first ?? meta.first_name ?? "",
-    last_name: overrides?.last ?? meta.last_name ?? "",
-    email: overrides?.email ?? user.email,
-    phone: overrides?.phone || meta.phone || null,
-    request_note: overrides?.note || meta.request_note || null,
+    household_id: householdId ?? null,
+    first_name: meta.first_name ?? "",
+    last_name: last,
+    email: user.email,
+    phone: meta.phone || null,
+    request_note: meta.request_note || null,
+    role: "head",
     status: "pending",
   });
 }

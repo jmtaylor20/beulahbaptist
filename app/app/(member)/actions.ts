@@ -19,7 +19,7 @@ async function upload(bucket: "member-photos" | "public-media", folder: string, 
   return path;
 }
 
-// ---- Profile -------------------------------------------------------------
+// ---- Profile and family -------------------------------------------------
 
 export async function updateProfile(form: FormData) {
   const person = await requireMember();
@@ -34,15 +34,68 @@ export async function updateProfile(form: FormData) {
       bible_translation: text(form, "bible_translation") || person.bible_translation,
     }).eq("id", person.id);
     if (error) throw new Error(error.message);
-    if (person.household_id && (form.has("address") || form.has("household_photo"))) {
-      const { data: h } = await supabase.from("households").select("photo_path").eq("id", person.household_id).maybeSingle();
+    if (person.household_id && form.has("address")) {
+      const { data: h } = await supabase.from("households").select("photo_path,name").eq("id", person.household_id).maybeSingle();
       const hp = (await upload("member-photos", `${person.id}/household`, form.get("household_photo") as File | null)) ?? h?.photo_path ?? null;
-      await supabase.from("households").update({ address: opt(form, "address"), city: opt(form, "city"), state: opt(form, "state") ?? "AL", zip: opt(form, "zip"), home_phone: opt(form, "home_phone"), anniversary: opt(form, "anniversary"), photo_path: hp }).eq("id", person.household_id);
+      await supabase.from("households").update({ name: text(form, "household_name") || h?.name, address: opt(form, "address"), city: opt(form, "city"), state: opt(form, "state") ?? "AL", zip: opt(form, "zip"), home_phone: opt(form, "home_phone"), anniversary: opt(form, "anniversary"), photo_path: hp }).eq("id", person.household_id);
     }
   } catch (e) {
     bounce(`${b}/profile`, { error: (e as Error).message });
   }
   bounce(`${b}/profile`, { ok: "Profile saved." });
+}
+
+// Family members share the household login. They are people rows with no
+// login of their own; the head of household adds and edits them here.
+const memberFields = (form: FormData, person: { last_name: string }) => {
+  const role = ["spouse", "child", "other"].includes(text(form, "role")) ? text(form, "role") : "other";
+  return {
+    first_name: text(form, "first_name"), last_name: text(form, "last_name") || person.last_name, role,
+    is_minor: role === "child" || form.get("is_minor") === "on",
+    email: opt(form, "email"), phone: opt(form, "phone"), birthday: opt(form, "birthday"), bio: opt(form, "bio"),
+    show_email: vis(form, "show_email"), show_phone: vis(form, "show_phone"), show_birthday: vis(form, "show_birthday"), show_address: vis(form, "show_address"),
+  };
+};
+
+export async function addFamilyMember(form: FormData) {
+  const person = await requireMember();
+  const b = await base();
+  const supabase = await supabaseServer();
+  if (!person.household_id) bounce(`${b}/profile`, { error: "Ask the church office to set up your household first." });
+  const fields = memberFields(form, person);
+  if (!fields.first_name) bounce(`${b}/profile`, { error: "A first name is needed." });
+  try {
+    const { data, error } = await supabase.from("people").insert({ ...fields, household_id: person.household_id, status: "active" }).select("id").single();
+    if (error) throw new Error(error.message);
+    const photo_path = await upload("member-photos", `${person.id}/${data.id}`, form.get("photo") as File | null);
+    if (photo_path) await supabase.from("people").update({ photo_path }).eq("id", data.id);
+  } catch (e) {
+    bounce(`${b}/profile`, { error: (e as Error).message });
+  }
+  bounce(`${b}/profile`, { ok: `${fields.first_name} added to your family.` });
+}
+
+export async function updateFamilyMember(form: FormData) {
+  const person = await requireMember();
+  const b = await base();
+  const supabase = await supabaseServer();
+  const id = text(form, "id");
+  try {
+    const photo_path = await upload("member-photos", `${person.id}/${id}`, form.get("photo") as File | null);
+    const { error } = await supabase.from("people").update({ ...memberFields(form, person), ...(photo_path ? { photo_path } : {}) }).eq("id", id).eq("household_id", person.household_id!).is("auth_user_id", null);
+    if (error) throw new Error(error.message);
+  } catch (e) {
+    bounce(`${b}/profile`, { error: (e as Error).message });
+  }
+  bounce(`${b}/profile`, { ok: "Family member saved." });
+}
+
+export async function removeFamilyMember(form: FormData) {
+  const person = await requireMember();
+  const b = await base();
+  const supabase = await supabaseServer();
+  await supabase.from("people").delete().eq("id", text(form, "id")).eq("household_id", person.household_id!).is("auth_user_id", null);
+  bounce(`${b}/profile`, { ok: "Removed from your family." });
 }
 
 // ---- Prayer --------------------------------------------------------------
