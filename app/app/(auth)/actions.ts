@@ -35,7 +35,13 @@ export async function requestAccess(form: FormData) {
   if (!first || !last || !email || password.length < 8) bounce(`${b}/signup`, { error: "Please fill in every field. Passwords need at least 8 characters." });
 
   const { data, error } = await supabase.auth.signUp({ email, password, options: { data: { first_name: first, last_name: last, phone: text(form, "phone"), request_note: text(form, "request_note"), family_name: text(form, "family_name") } } });
-  if (error || !data.user) bounce(`${b}/signup`, { error: error?.message ?? "Could not create your account." });
+  if (error || !data.user) {
+    const m = error?.message ?? "";
+    const friendly = /security purposes|rate limit|after \d+ seconds/i.test(m) ? "We just sent you a confirmation email. Check your inbox (and spam folder), then wait a minute before trying again."
+      : /already registered|already exists/i.test(m) ? "That email already has a login. Try signing in, or use Forgot password."
+      : m || "Could not create your account.";
+    bounce(`${b}/signup`, { error: friendly });
+  }
 
   // With email confirmation on, there is no session yet; the rows are
   // created on first sign-in instead (see ensurePerson).
