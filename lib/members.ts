@@ -7,7 +7,7 @@ import { supabaseServer } from "./supabase/server";
 // built with base() so they stay clean on both.
 export async function base() {
   const h = await headers();
-  return h.get("x-app-base") ?? "/app";
+  return h.get("x-app-base") === "root" ? "" : "/app";
 }
 
 export type Person = {
