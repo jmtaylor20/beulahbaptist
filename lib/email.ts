@@ -85,7 +85,8 @@ export function renderNewsletter(d: NewsletterData) {
   const section = (title: string, inner: string) => inner ? `<tr><td style="padding:22px 16px 6px"><p style="margin:0 0 12px;color:${theme.accent};font:800 12px/1 Helvetica,Arial,sans-serif;letter-spacing:.2em;text-transform:uppercase;border-bottom:2px solid ${theme.accent2};padding-bottom:8px">${title}</p>${inner}</td></tr>` : "";
   const card = (inner: string) => `<div style="background:#fff;border-radius:12px;padding:16px 18px;margin:0 0 12px;border-left:4px solid ${theme.accent2}">${inner}</div>`;
 
-  const imageCard = (image: string, inner: string) => `<div style="background:#fff;border-radius:12px;margin:0 0 14px;overflow:hidden;border-left:4px solid ${theme.accent2}"><img src="${image}" alt="" style="width:100%;height:auto;display:block">${inner ? `<div style="padding:14px 18px 16px">${inner}</div>` : ""}</div>`;
+  // The picture links to its full-size file so it can be opened and zoomed.
+  const imageCard = (image: string, inner: string) => `<div style="background:#fff;border-radius:12px;margin:0 0 14px;overflow:hidden;border-left:4px solid ${theme.accent2}"><a href="${image}" target="_blank" style="display:block;line-height:0"><img src="${image}" alt="Tap to enlarge" style="width:100%;height:auto;display:block;border:0"></a><div style="padding:14px 18px 16px">${inner}<a href="${image}" target="_blank" style="display:inline-block;margin-top:${inner ? "10" : "0"}px;color:#5d6a7b;font-size:13px;text-decoration:none">&#128269; Tap the picture to enlarge it</a></div></div>`;
   const announcements = d.announcements.map((a) => {
     const text = `<h3 style="margin:0 0 8px;color:${theme.accent};font:700 18px Georgia,serif">${esc(a.title)}</h3>${para(a.body)}${a.link ? `<a href="${a.link}" style="color:${theme.accent};font-weight:bold">Learn more &rarr;</a>` : ""}`;
     return a.image ? imageCard(a.image, text) : card(text);
