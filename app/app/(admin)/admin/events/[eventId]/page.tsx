@@ -23,7 +23,7 @@ export default async function EventAdmin({ params, searchParams }: { params: Pro
   const supabase = await supabaseServer();
   const { data } = isNew ? { data: null } : await supabase.from("events").select("*,people!submitted_by(first_name,last_name),event_rsvps(headcount,people(first_name,last_name))").eq("id", eventId).maybeSingle();
   if (!isNew && !data) notFound();
-  const e = data ?? { id: "", title: "", description: "", location: "", starts_at: null, ends_at: null, all_day: false, image_path: null, rsvp_enabled: false, status: "approved", people: null, event_rsvps: [] };
+  const e = data ?? { id: "", title: "", description: "", location: "", starts_at: null, ends_at: null, all_day: false, image_path: null, rsvp_enabled: false, show_on_website: true, status: "approved", people: null, event_rsvps: [] };
   const by = e.people as unknown as { first_name: string; last_name: string } | null;
   return (
     <>
@@ -41,7 +41,11 @@ export default async function EventAdmin({ params, searchParams }: { params: Pro
           <label>Description<textarea name="description" rows={4} defaultValue={e.description ?? ""} /></label>
           {publicMediaUrl(e.image_path) && <img src={publicMediaUrl(e.image_path)!} alt="" style={{ maxWidth: 320, borderRadius: 10 }} />}
           <label>Picture or flyer<PhotoInput name="image" /></label>
-          <label className="check"><input type="checkbox" name="rsvp_enabled" defaultChecked={e.rsvp_enabled} /> Allow RSVP</label>
+          <div className="row">
+            <label className="check"><input type="checkbox" name="rsvp_enabled" defaultChecked={e.rsvp_enabled} /> Allow RSVP</label>
+            <label className="check"><input type="checkbox" name="show_on_website" defaultChecked={e.show_on_website} /> Show on church website</label>
+          </div>
+          <p className="hint">Uncheck for members-only gatherings, like something at a member&rsquo;s home.</p>
           <label>Status<select name="status" defaultValue={e.status}><option value="approved">Approved (on the calendar)</option><option value="draft">Draft</option><option value="suggested">Suggested</option><option value="archived">Archived</option></select></label>
         </section>
         <div className="ma-actions"><button className="button navy" type="submit">Save</button>{e.status !== "approved" && <button className="button gold" type="submit" name="approve" value="1">Save and approve</button>}</div>

@@ -189,7 +189,7 @@ export async function saveEvent(form: FormData) {
       title: text(form, "title"), description: opt(form, "description"), location: opt(form, "location"),
       starts_at: startDate ? centralToIso(`${startDate}T${startTime || "12:00"}`) : null,
       ends_at: endDate && endTime ? centralToIso(`${endDate}T${endTime}`) : null,
-      all_day, rsvp_enabled: on(form, "rsvp_enabled"),
+      all_day, rsvp_enabled: on(form, "rsvp_enabled"), show_on_website: on(form, "show_on_website"),
       status: form.get("approve") ? "approved" : text(form, "status") || "approved", ...(image_path ? { image_path } : {}),
     };
     if (!row.title || !row.starts_at) throw new Error("A title and a date are needed.");

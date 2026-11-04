@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { UpcomingEvents } from "./UpcomingEvents";
 import { ContactForm } from "./ui";
 import { EventPopup } from "./EventPopup";
 import { canonical } from "../site-url";
@@ -80,6 +81,8 @@ export default function Home() {
           ))}
         </div>
       </section>
+
+      <UpcomingEvents limit={4} />
 
       <section className="split-feature">
         <div className="split-image worship-image" role="img" aria-label="Beulah Baptist Church at sunset" />
