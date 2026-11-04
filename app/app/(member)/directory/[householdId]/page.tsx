@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { base, monthDay, photoUrls, requireMember } from "../../../../../lib/members";
 import { supabaseServer } from "../../../../../lib/supabase/server";
 import { Avatar, ContactButtons } from "../../../ui";
+import { Lightbox } from "../../../Lightbox";
 
 export const metadata = { title: "Household" };
 
@@ -28,7 +29,7 @@ export default async function HouseholdPage({ params }: { params: Promise<{ hous
       <Link className="text-link" href={`${b}/directory`}><span>←</span> Directory</Link>
       <section className="ma-card" style={{ marginTop: 16, textAlign: "center" }}>
         <div style={{ display: "grid", justifyItems: "center", gap: 10 }}>
-          <Avatar name={head.household_name ?? ""} src={photos.get(head.household_photo_path ?? "") ?? photos.get(adults[0]?.photo_path ?? "") ?? null} size="lg" />
+          <Lightbox name={head.household_name ?? ""} src={photos.get(head.household_photo_path ?? "") ?? null}><Avatar name={head.household_name ?? ""} src={photos.get(head.household_photo_path ?? "") ?? photos.get(adults[0]?.photo_path ?? "") ?? null} size="lg" /></Lightbox>
           <h1 style={{ marginBottom: 0 }}>{head.household_name}</h1>
           {addr && <p className="ma-lead" style={{ marginBottom: 0 }}>{addr}</p>}
           {head.anniversary && <span className="ma-badge gold">💍 Anniversary {monthDay(head.anniversary)}</span>}
@@ -43,7 +44,7 @@ export default async function HouseholdPage({ params }: { params: Promise<{ hous
       <div className="ma-household-members">
         {members.map((m) => (
           <div key={m.id} className="ma-member">
-            <Avatar name={`${m.first_name} ${m.last_name}`} src={photos.get(m.photo_path ?? "") ?? null} />
+            <Lightbox name={`${m.first_name} ${m.last_name}`} src={photos.get(m.photo_path ?? "") ?? null}><Avatar name={`${m.first_name} ${m.last_name}`} src={photos.get(m.photo_path ?? "") ?? null} /></Lightbox>
             <div>
               <strong>{m.first_name} {m.last_name}</strong> {m.is_minor && <span className="ma-badge">child</span>}
               {m.birthday && <p>🎂 {monthDay(m.birthday)}</p>}

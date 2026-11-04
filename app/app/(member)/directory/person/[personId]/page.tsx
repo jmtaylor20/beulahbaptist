@@ -3,6 +3,7 @@ import { notFound, redirect } from "next/navigation";
 import { base, monthDay, photoUrl, requireMember } from "../../../../../../lib/members";
 import { supabaseServer } from "../../../../../../lib/supabase/server";
 import { Avatar, ContactButtons } from "../../../../ui";
+import { Lightbox } from "../../../../Lightbox";
 
 // A member who is not attached to a household yet.
 export default async function PersonPage({ params }: { params: Promise<{ personId: string }> }) {
@@ -18,7 +19,7 @@ export default async function PersonPage({ params }: { params: Promise<{ personI
       <Link className="text-link" href={`${b}/directory`}><span>←</span> Directory</Link>
       <section className="ma-card" style={{ marginTop: 16, textAlign: "center" }}>
         <div style={{ display: "grid", justifyItems: "center", gap: 10 }}>
-          <Avatar name={`${m.first_name} ${m.last_name}`} src={await photoUrl(m.photo_path)} size="lg" />
+          <Lightbox name={`${m.first_name} ${m.last_name}`} src={await photoUrl(m.photo_path)}><Avatar name={`${m.first_name} ${m.last_name}`} src={await photoUrl(m.photo_path)} size="lg" /></Lightbox>
           <h1 style={{ marginBottom: 0 }}>{m.first_name} {m.last_name}</h1>
           {m.birthday && <p className="ma-lead" style={{ marginBottom: 0 }}>🎂 {monthDay(m.birthday)}</p>}
         </div>

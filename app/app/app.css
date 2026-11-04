@@ -161,3 +161,12 @@
 .ma-cropper label { width:100%; display:grid; gap:4px; font-size:.7rem; font-weight:800; letter-spacing:.08em; text-transform:uppercase; color:var(--navy); }
 .ma-cropper input[type=range] { width:100%; }
 .ma-cropper .hint { margin:0; text-align:center; }
+
+/* Tap a directory photo to see it large */
+.ma-photo-button { padding:0; border:0; background:none; cursor:zoom-in; border-radius:50%; display:inline-block; line-height:0; }
+.ma-photo-button:focus-visible { outline:3px solid var(--blue); outline-offset:3px; }
+.ma-lightbox { position:fixed; inset:0; z-index:100; display:grid; place-items:center; align-content:center; gap:14px; padding:24px; background:rgb(3 22 44 / .92); cursor:zoom-out; animation:ma-fade .15s ease; }
+.ma-lightbox img { max-width:min(92vw, 560px); max-height:72vh; border-radius:16px; box-shadow:0 24px 70px rgb(0 0 0 / .5); object-fit:contain; background:#fff; }
+.ma-lightbox p { margin:0; color:#fff; font-family:var(--display); font-size:1.4rem; }
+.ma-lightbox-close { position:absolute; top:calc(14px + env(safe-area-inset-top)); right:18px; color:#fff; font-size:2.2rem; line-height:1; }
+@keyframes ma-fade { from { opacity:0 } to { opacity:1 } }
