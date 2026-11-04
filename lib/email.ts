@@ -54,20 +54,23 @@ export type NewsletterData = {
   verse?: { text: string; ref: string } | null;
 };
 
-const THEMES: Record<string, { accent: string; accent2: string; bg: string; name: string }> = {
-  january: { accent: "#062a52", accent2: "#8fb6d8", bg: "#eef3f8", name: "Winter blue" },
-  february: { accent: "#6b1e2e", accent2: "#d9a7b0", bg: "#f8eef0", name: "Rose" },
-  march: { accent: "#2f5d3a", accent2: "#a7c9a9", bg: "#eef5ee", name: "Spring green" },
-  april: { accent: "#3b4b8c", accent2: "#c3b5e3", bg: "#f2f0f8", name: "Easter lavender" },
-  may: { accent: "#9a5b1c", accent2: "#f1c27b", bg: "#fbf4e8", name: "Honey" },
-  june: { accent: "#0b6e8a", accent2: "#9bd3e3", bg: "#eaf6f9", name: "Summer sky" },
-  july: { accent: "#8a1f1f", accent2: "#062a52", bg: "#f8f1ee", name: "Red, white and blue" },
-  august: { accent: "#b35a00", accent2: "#f3c07a", bg: "#fbf2e6", name: "Sunset" },
-  september: { accent: "#7a4a1d", accent2: "#d8b07a", bg: "#f7f0e6", name: "Harvest" },
-  october: { accent: "#8c3b0b", accent2: "#e7a35a", bg: "#f9efe4", name: "Autumn" },
-  november: { accent: "#5b3a1e", accent2: "#c9a070", bg: "#f6efe5", name: "Thanksgiving" },
-  december: { accent: "#123d2e", accent2: "#c9a227", bg: "#edf4ef", name: "Christmas" },
-  classic: { accent: "#062a52", accent2: "#d6a344", bg: "#f7f2e8", name: "Beulah classic" },
+// One look per month. Each month has a banner image (public/images/newsletter)
+// with the logo, "Newsletter" and the month name already on it; the accent
+// color matches the brush stroke behind the month name.
+const THEMES: Record<string, { accent: string; accent2: string; bg: string; name: string; banner?: string }> = {
+  january: { accent: "#1c3a66", accent2: "#8fb6d8", bg: "#eef3f8", name: "January · Winter", banner: "january" },
+  february: { accent: "#a3242a", accent2: "#e3a7ab", bg: "#f8eeee", name: "February · Heart and Word", banner: "february" },
+  march: { accent: "#5a7a2e", accent2: "#b9d19a", bg: "#f0f5ea", name: "March · New growth", banner: "march" },
+  april: { accent: "#a0522d", accent2: "#e9b48e", bg: "#f9f0ea", name: "April · Easter", banner: "april" },
+  may: { accent: "#4a6b2a", accent2: "#b4cf9a", bg: "#f0f5ea", name: "May · Dogwood", banner: "may" },
+  june: { accent: "#1c3a66", accent2: "#f3b76b", bg: "#eef3f8", name: "June · Summer sunset", banner: "june" },
+  july: { accent: "#a3242a", accent2: "#1c3a66", bg: "#f8f1ee", name: "July · Red, white and blue", banner: "july" },
+  august: { accent: "#b8862b", accent2: "#f1cf85", bg: "#fbf4e6", name: "August · Golden fields", banner: "august" },
+  september: { accent: "#6e1f2a", accent2: "#e7a35a", bg: "#f9f0e8", name: "September · Mountains", banner: "september" },
+  october: { accent: "#c45a1c", accent2: "#f0b26a", bg: "#f9efe4", name: "October · Harvest", banner: "october" },
+  november: { accent: "#5b3a1e", accent2: "#d9b574", bg: "#f6efe5", name: "November · Thanksgiving", banner: "november" },
+  december: { accent: "#a3242a", accent2: "#1f5a3c", bg: "#eef3f0", name: "December · Christmas", banner: "december" },
+  classic: { accent: "#062a52", accent2: "#d6a344", bg: "#f7f2e8", name: "Beulah classic (no photo)" },
 };
 export const THEME_NAMES = Object.fromEntries(Object.entries(THEMES).map(([k, t]) => [k, t.name]));
 
@@ -81,7 +84,7 @@ export function renderNewsletter(d: NewsletterData) {
 
   const announcements = d.announcements.map((a) => card(`${a.image ? `<img src="${a.image}" alt="" style="width:100%;border-radius:8px;margin:0 0 12px;display:block">` : ""}<h3 style="margin:0 0 8px;color:${theme.accent};font:700 18px Georgia,serif">${esc(a.title)}</h3>${para(a.body)}${a.link ? `<a href="${a.link}" style="color:${theme.accent};font-weight:bold">Learn more &rarr;</a>` : ""}`)).join("");
   const events = d.events.map((e) => card(`<b style="color:${theme.accent};font-family:Georgia,serif;font-size:16px">${esc(e.title)}</b><br><span style="color:#5d6a7b;font-size:14px">${esc(e.when)}${e.where ? ` &middot; ${esc(e.where)}` : ""}</span>${e.description ? `<div style="margin-top:8px;font-size:14px">${para(e.description)}</div>` : ""}`)).join("");
-  const serving = d.serving.map((s) => card(`<b style="color:${theme.accent};font-family:Georgia,serif;font-size:16px">${esc(s.title)}</b><br><span style="color:#5d6a7b;font-size:14px">${s.slots ? `${s.filled} of ${s.slots} spots filled` : `${s.filled} signed up`}</span>${s.body ? `<div style="margin-top:8px;font-size:14px">${para(s.body)}</div>` : ""}<a href="${APP_URL}/serving" style="display:inline-block;margin-top:8px;color:${theme.accent};font-weight:bold">Sign up in the app &rarr;</a>`)).join("");
+  const serving = d.serving.map((s) => card(`<b style="color:${theme.accent};font-family:Georgia,serif;font-size:16px">${esc(s.title)}</b><br><span style="color:#5d6a7b;font-size:14px">${s.slots ? `${s.filled} of ${s.slots} spots filled` : `${s.filled} signed up`}</span>${s.body ? `<div style="margin-top:8px;font-size:14px">${para(s.body)}</div>` : ""}<a href="${APP_URL}/serving" style="display:block;margin-top:10px;color:${theme.accent};font-weight:bold">Sign up in the app &rarr;</a>`)).join("");
   const celebrations = [...d.birthdays.map((b) => `<li>&#127874; <b>${esc(b.name)}</b> &middot; ${esc(b.day)}</li>`), ...d.anniversaries.map((a) => `<li>&#128141; <b>${esc(a.name)}</b> &middot; ${esc(a.day)}</li>`)];
   const prayers = d.prayers.map((p) => card(`${para(p.body)}${p.name ? `<span style="color:#5d6a7b;font-size:13px">${esc(p.name)}</span>` : ""}`)).join("");
 
@@ -89,11 +92,12 @@ export function renderNewsletter(d: NewsletterData) {
 <body style="margin:0;background:${theme.bg};font-family:Helvetica,Arial,sans-serif;color:#16263b">
 <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:${theme.bg}"><tr><td align="center" style="padding:24px 12px">
 <table role="presentation" width="600" cellspacing="0" cellpadding="0" style="max-width:600px;width:100%;background:${theme.bg}">
-<tr><td style="background:${theme.accent};border-radius:14px 14px 0 0;padding:28px;text-align:center;border-bottom:5px solid ${theme.accent2}">
+${theme.banner ? `<tr><td style="padding:0;line-height:0"><img src="https://beulahbaptistchurch.com/images/newsletter/${theme.banner}.jpg" width="600" alt="Beulah Baptist Church newsletter, ${theme.banner}" style="display:block;width:100%;height:auto;border-radius:14px 14px 0 0"></td></tr>
+<tr><td style="background:${theme.accent};padding:16px 28px;text-align:center;border-bottom:5px solid ${theme.accent2}"><h1 style="margin:0;color:#fff;font:700 24px/1.2 Georgia,serif">${esc(d.subject)}</h1></td></tr>` : `<tr><td style="background:${theme.accent};border-radius:14px 14px 0 0;padding:28px;text-align:center;border-bottom:5px solid ${theme.accent2}">
   <img src="https://beulahbaptistchurch.com/images/logo-seal.png" width="72" alt="" style="display:block;margin:0 auto 10px;background:#fff;border-radius:50%;padding:4px">
   <div style="color:#fff;font:800 13px/1 Helvetica,Arial,sans-serif;letter-spacing:.22em;text-transform:uppercase">Beulah Baptist Church</div>
   <h1 style="margin:10px 0 0;color:#fff;font:700 28px/1.15 Georgia,serif">${esc(d.subject)}</h1>
-</td></tr>
+</td></tr>`}
 ${d.intro ? `<tr><td style="padding:24px 28px 0;font-size:16px;line-height:1.6">${para(d.intro)}</td></tr>` : ""}
 ${d.verse ? `<tr><td style="padding:18px 28px 0"><div style="background:#fff;border-radius:12px;padding:18px 20px;text-align:center;font:italic 17px/1.5 Georgia,serif;color:${theme.accent}">&ldquo;${esc(d.verse.text)}&rdquo;<div style="margin-top:8px;font:800 12px Helvetica,Arial,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#5d6a7b;font-style:normal">${esc(d.verse.ref)}</div></div></td></tr>` : ""}
 ${section("Announcements", announcements)}
