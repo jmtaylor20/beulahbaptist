@@ -48,8 +48,8 @@ export default async function NewsletterBuilder({ params, searchParams }: { para
             {!src.announcements.length ? <p className="ma-lead">No approved announcements. <Link href={`${b}/admin/announcements`}>Approve some first.</Link></p> : src.announcements.map((a) => <label key={a.id} className="check"><input type="checkbox" name="announcement" value={a.id} defaultChecked={chosenA.has(a.id)} /> {a.title}{a.image_path ? " 🖼" : ""}</label>)}
           </section>
           <section className="ma-card">
-            <h2>Events in the next two weeks</h2>
-            {!src.events.length ? <p className="ma-lead">Nothing on the calendar in the next two weeks.</p> : src.events.map((e) => <label key={e.id} className="check"><input type="checkbox" name="event" value={e.id} defaultChecked={chosenE.has(e.id)} /> {e.title} · {fmtDate(e.starts_at, { weekday: "short", month: "short", day: "numeric" })}{e.all_day ? "" : ` ${fmtTime(e.starts_at)}`}</label>)}
+            <h2>Upcoming events (next 60 days)</h2>
+            {!src.events.length ? <p className="ma-lead">Nothing on the calendar in the next 60 days.</p> : src.events.map((e) => <label key={e.id} className="check"><input type="checkbox" name="event" value={e.id} defaultChecked={chosenE.has(e.id)} /> {e.title} · {fmtDate(e.starts_at, { weekday: "short", month: "short", day: "numeric" })}{e.all_day ? "" : ` ${fmtTime(e.starts_at)}`}{e.image_path ? " 🖼" : ""}</label>)}
           </section>
           <section className="ma-card">
             <h2>Serving sign-ups</h2>

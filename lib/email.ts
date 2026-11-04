@@ -46,7 +46,7 @@ export function approvalEmail(firstName: string) {
 export type NewsletterData = {
   subject: string; intro?: string | null; template?: string | null;
   announcements: { title: string; body?: string | null; image?: string | null; link?: string | null }[];
-  events: { title: string; when: string; where?: string | null; description?: string | null }[];
+  events: { title: string; when: string; where?: string | null; description?: string | null; image?: string | null }[];
   serving: { title: string; body?: string | null; filled: number; slots?: number | null }[];
   birthdays: { name: string; day: string }[];
   anniversaries: { name: string; day: string }[];
@@ -91,7 +91,12 @@ export function renderNewsletter(d: NewsletterData) {
     const text = `<h3 style="margin:0 0 8px;color:${theme.accent};font:700 18px Georgia,serif">${esc(a.title)}</h3>${para(a.body)}${a.link ? `<a href="${a.link}" style="color:${theme.accent};font-weight:bold">Learn more &rarr;</a>` : ""}`;
     return a.image ? imageCard(a.image, text) : card(text);
   }).join("");
-  const events = d.events.map((e) => card(`<b style="color:${theme.accent};font-family:Georgia,serif;font-size:16px">${esc(e.title)}</b><br><span style="color:#5d6a7b;font-size:14px">${esc(e.when)}${e.where ? ` &middot; ${esc(e.where)}` : ""}</span>${e.description ? `<div style="margin-top:8px;font-size:14px">${para(e.description)}</div>` : ""}`)).join("");
+  // An event with a flyer is shown like an announcement: picture first, then
+  // the when and where. Without one it is a compact line.
+  const events = d.events.map((e) => {
+    const line = `<b style="color:${theme.accent};font-family:Georgia,serif;font-size:${e.image ? 18 : 16}px">${esc(e.title)}</b><br><span style="color:#5d6a7b;font-size:14px">${esc(e.when)}${e.where ? ` &middot; ${esc(e.where)}` : ""}</span>${e.description ? `<div style="margin-top:8px;font-size:14px">${para(e.description)}</div>` : ""}`;
+    return e.image ? imageCard(e.image, line) : card(line);
+  }).join("");
   const serving = d.serving.map((s) => card(`<b style="color:${theme.accent};font-family:Georgia,serif;font-size:16px">${esc(s.title)}</b><br><span style="color:#5d6a7b;font-size:14px">${s.slots ? `${s.filled} of ${s.slots} spots filled` : `${s.filled} signed up`}</span>${s.body ? `<div style="margin-top:8px;font-size:14px">${para(s.body)}</div>` : ""}<a href="${APP_URL}/serving" style="display:block;margin-top:10px;color:${theme.accent};font-weight:bold">Sign up in the app &rarr;</a>`)).join("");
   const celebrations = [...d.birthdays.map((b) => `<li>&#127874; <b>${esc(b.name)}</b> &middot; ${esc(b.day)}</li>`), ...d.anniversaries.map((a) => `<li>&#128141; <b>${esc(a.name)}</b> &middot; ${esc(a.day)}</li>`)];
   const prayers = d.prayers.map((p) => card(`${para(p.body)}${p.name ? `<span style="color:#5d6a7b;font-size:13px">${esc(p.name)}</span>` : ""}`)).join("");

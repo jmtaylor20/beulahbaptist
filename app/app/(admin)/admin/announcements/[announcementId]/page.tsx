@@ -29,6 +29,7 @@ export default async function AnnouncementAdmin({ params, searchParams }: { para
       {by && <p className="ma-lead">Suggested by {by.first_name} {by.last_name}</p>}
       <Notice searchParams={sp} />
 
+      {isNew && a.kind === "announcement" && <p className="ma-ok">Has a date? <Link href={`${b}/admin/events/new`} style={{ fontWeight: 800 }}>Create it as an event instead</Link>. Events go on the calendar, the church website and the weekly email with their flyer, so there is no need to enter them twice. Announcements are for things without a date.</p>}
       <form className="ma-form" action={saveAnnouncement} encType="multipart/form-data" id="announcement-form">
         <input type="hidden" name="id" value={a.id} />
         <section className="ma-card">

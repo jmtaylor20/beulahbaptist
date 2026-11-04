@@ -233,10 +233,10 @@ export async function markFormHandled(form: FormData) {
 export async function newsletterSources() {
   const supabase = await supabaseServer();
   const today = new Date().toISOString().slice(0, 10);
-  const in14 = new Date(Date.now() + 14 * 86400000).toISOString();
+  const in60 = new Date(Date.now() + 60 * 86400000).toISOString();
   const [{ data: announcements }, { data: events }, { data: prayers }, { data: people }, { data: households }] = await Promise.all([
     supabase.from("announcements").select("id,kind,title,body,image_path,link_url,starts_on,ends_on,slots,serving_signups(person_id)").eq("status", "approved").or(`ends_on.is.null,ends_on.gte.${today}`).order("created_at", { ascending: false }),
-    supabase.from("events").select("id,title,description,location,starts_at,all_day").eq("status", "approved").gte("starts_at", new Date().toISOString()).lte("starts_at", in14).order("starts_at"),
+    supabase.from("events").select("id,title,description,location,starts_at,all_day,image_path").eq("status", "approved").gte("starts_at", new Date().toISOString()).lte("starts_at", in60).order("starts_at"),
     supabase.from("prayer_requests").select("id,body,person_id,people(first_name,last_name)").eq("audience", "church").eq("newsletter_ok", true).is("answered_at", null).order("created_at", { ascending: false }).limit(10),
     supabase.from("people").select("id,first_name,last_name,birthday,status,email").eq("status", "active"),
     supabase.from("households").select("id,name,anniversary"),
@@ -266,7 +266,7 @@ async function buildFromForm(form: FormData) {
   const data: NewsletterData = {
     subject: text(form, "subject") || "This week at Beulah", intro: opt(form, "intro"), template: opt(form, "template"),
     announcements: src.announcements.filter((x) => a.has(x.id)).map((x) => ({ title: x.title, body: x.body, image: publicMediaUrl(x.image_path), link: x.link_url })),
-    events: src.events.filter((x) => e.has(x.id)).map((x) => ({ title: x.title, when: `${fmtDate(x.starts_at, { weekday: "long", month: "long", day: "numeric" })}${x.all_day ? "" : ` at ${fmtTime(x.starts_at)}`}`, where: x.location, description: x.description })),
+    events: src.events.filter((x) => e.has(x.id)).map((x) => ({ title: x.title, when: `${fmtDate(x.starts_at, { weekday: "long", month: "long", day: "numeric" })}${x.all_day ? "" : ` at ${fmtTime(x.starts_at)}`}`, where: x.location, description: x.description, image: publicMediaUrl(x.image_path) })),
     serving: src.serving.filter((x) => s.has(x.id)).map((x) => ({ title: x.title, body: x.body, filled: (x.serving_signups as unknown[]).length, slots: x.slots })),
     birthdays: on(form, "include_birthdays") ? src.birthdays : [], anniversaries: on(form, "include_birthdays") ? src.anniversaries : [],
     prayers: src.prayers.filter((x) => p.has(x.id)).map((x) => ({ body: x.body, name: x.name })),
