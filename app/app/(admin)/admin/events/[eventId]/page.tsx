@@ -8,7 +8,11 @@ import { PhotoInput } from "../../../../PhotoInput";
 
 export const metadata = { title: "Event" };
 
-const local = (iso: string | null) => (iso ? new Date(iso).toLocaleString("sv-SE", { timeZone: "America/Chicago" }).slice(0, 16).replace(" ", "T") : "");
+// Date and time boxes are separate: phones handle those far better than a
+// combined picker. Values are shown in Central time.
+const local = (iso: string | null) => (iso ? new Date(iso).toLocaleString("sv-SE", { timeZone: "America/Chicago" }).slice(0, 16) : "");
+const datePart = (iso: string | null) => local(iso).slice(0, 10);
+const timePart = (iso: string | null) => local(iso).slice(11, 16);
 
 export default async function EventAdmin({ params, searchParams }: { params: Promise<{ eventId: string }>; searchParams: Promise<{ ok?: string; error?: string }> }) {
   await requireAdmin();
@@ -31,15 +35,13 @@ export default async function EventAdmin({ params, searchParams }: { params: Pro
         <input type="hidden" name="id" value={e.id} />
         <section className="ma-card">
           <label>Title<input name="title" defaultValue={e.title} required /></label>
-          <div className="row"><label>Starts<input name="starts_at" type="datetime-local" defaultValue={local(e.starts_at)} required /></label><label>Ends<input name="ends_at" type="datetime-local" defaultValue={local(e.ends_at)} /></label></div>
+          <div className="row"><label>Date<input name="start_date" type="date" defaultValue={datePart(e.starts_at)} required /></label><label>Start time<input name="start_time" type="time" defaultValue={e.all_day ? "" : timePart(e.starts_at)} /><span className="hint">Leave blank for an all-day event.</span></label></div>
+          <div className="row"><label>End time<input name="end_time" type="time" defaultValue={timePart(e.ends_at)} /></label><label>End date (if different)<input name="end_date" type="date" defaultValue={e.ends_at && datePart(e.ends_at) !== datePart(e.starts_at) ? datePart(e.ends_at) : ""} /></label></div>
           <label>Location<input name="location" defaultValue={e.location ?? ""} /></label>
           <label>Description<textarea name="description" rows={4} defaultValue={e.description ?? ""} /></label>
           {publicMediaUrl(e.image_path) && <img src={publicMediaUrl(e.image_path)!} alt="" style={{ maxWidth: 320, borderRadius: 10 }} />}
           <label>Picture or flyer<PhotoInput name="image" /></label>
-          <div className="row">
-            <label className="check"><input type="checkbox" name="all_day" defaultChecked={e.all_day} /> All day</label>
-            <label className="check"><input type="checkbox" name="rsvp_enabled" defaultChecked={e.rsvp_enabled} /> Allow RSVP</label>
-          </div>
+          <label className="check"><input type="checkbox" name="rsvp_enabled" defaultChecked={e.rsvp_enabled} /> Allow RSVP</label>
           <label>Status<select name="status" defaultValue={e.status}><option value="approved">Approved (on the calendar)</option><option value="draft">Draft</option><option value="suggested">Suggested</option><option value="archived">Archived</option></select></label>
         </section>
         <div className="ma-actions"><button className="button navy" type="submit">Save</button>{e.status !== "approved" && <button className="button gold" type="submit" name="approve" value="1">Save and approve</button>}</div>

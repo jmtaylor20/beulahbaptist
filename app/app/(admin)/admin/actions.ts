@@ -183,12 +183,17 @@ export async function saveEvent(form: FormData) {
   const id = text(form, "id");
   try {
     const image_path = await upload("public-media", "events/admin", form.get("image") as File | null);
+    const startDate = text(form, "start_date"), startTime = text(form, "start_time"), endTime = text(form, "end_time"), endDate = text(form, "end_date") || startDate;
+    const all_day = !startTime;
     const row = {
       title: text(form, "title"), description: opt(form, "description"), location: opt(form, "location"),
-      starts_at: centralToIso(text(form, "starts_at")), ends_at: centralToIso(text(form, "ends_at")), all_day: on(form, "all_day"), rsvp_enabled: on(form, "rsvp_enabled"),
+      starts_at: startDate ? centralToIso(`${startDate}T${startTime || "12:00"}`) : null,
+      ends_at: endDate && endTime ? centralToIso(`${endDate}T${endTime}`) : null,
+      all_day, rsvp_enabled: on(form, "rsvp_enabled"),
       status: form.get("approve") ? "approved" : text(form, "status") || "approved", ...(image_path ? { image_path } : {}),
     };
-    if (!row.title || !row.starts_at) throw new Error("A title and start time are needed.");
+    if (!row.title || !row.starts_at) throw new Error("A title and a date are needed.");
+    if (row.ends_at && row.ends_at < row.starts_at) throw new Error("The end time is before the start time.");
     if (id) {
       const { error } = await supabase.from("events").update(row).eq("id", id);
       if (error) throw new Error(error.message);

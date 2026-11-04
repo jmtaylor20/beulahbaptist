@@ -60,9 +60,11 @@ export const fmtTime = (value: string) => new Date(value).toLocaleTimeString("en
 // using the right offset for that date (CST or CDT).
 export function centralToIso(local: string) {
   if (!local) return null;
-  const [date, time = "12:00"] = local.split("T");
+  const [date, rawTime] = local.split("T");
+  const time = /^\d{1,2}:\d{2}/.test(rawTime ?? "") ? rawTime : "12:00";
   const [y, m, d] = date.split("-").map(Number);
   const [hh, mm] = time.split(":").map(Number);
+  if (![y, m, d, hh, mm].every(Number.isFinite)) return null;
   const guess = Date.UTC(y, m - 1, d, hh, mm);
   const parts = new Intl.DateTimeFormat("en-US", { timeZone: "America/Chicago", hour12: false, year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" }).formatToParts(new Date(guess));
   const get = (t: string) => Number(parts.find((p) => p.type === t)?.value);
