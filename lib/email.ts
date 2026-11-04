@@ -57,6 +57,9 @@ export type NewsletterData = {
 // One look per month. Each month has a banner image (public/images/newsletter)
 // with the logo, "Newsletter" and the month name already on it; the accent
 // color matches the brush stroke behind the month name.
+// Bump when the banner files change so mail apps stop showing a cached copy.
+const BANNER_VERSION = "2";
+
 const THEMES: Record<string, { accent: string; accent2: string; bg: string; name: string; banner?: string }> = {
   january: { accent: "#1c3a66", accent2: "#8fb6d8", bg: "#eef3f8", name: "January · Winter", banner: "january" },
   february: { accent: "#a3242a", accent2: "#e3a7ab", bg: "#f8eeee", name: "February · Heart and Word", banner: "february" },
@@ -96,7 +99,7 @@ export function renderNewsletter(d: NewsletterData) {
 <body style="margin:0;background:${theme.bg};font-family:Helvetica,Arial,sans-serif;color:#16263b">
 <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:${theme.bg}"><tr><td align="center" style="padding:24px 12px">
 <table role="presentation" width="700" cellspacing="0" cellpadding="0" style="max-width:700px;width:100%;background:${theme.bg}">
-${theme.banner ? `<tr><td style="padding:0;line-height:0"><img src="https://beulahbaptistchurch.com/images/newsletter/${theme.banner}.jpg" width="700" alt="Beulah Baptist Church newsletter, ${theme.banner}" style="display:block;width:100%;height:auto;border-radius:14px 14px 0 0"></td></tr>
+${theme.banner ? `<tr><td style="padding:0;line-height:0"><img src="https://beulahbaptistchurch.com/images/newsletter/${theme.banner}.jpg?v=${BANNER_VERSION}" width="700" alt="Beulah Baptist Church newsletter, ${theme.banner}" style="display:block;width:100%;height:auto;border-radius:14px 14px 0 0"></td></tr>
 <tr><td style="background:${theme.accent};padding:16px 28px;text-align:center;border-bottom:5px solid ${theme.accent2}"><h1 style="margin:0;color:#fff;font:700 24px/1.2 Georgia,serif">${esc(d.subject)}</h1></td></tr>` : `<tr><td style="background:${theme.accent};border-radius:14px 14px 0 0;padding:28px;text-align:center;border-bottom:5px solid ${theme.accent2}">
   <img src="https://beulahbaptistchurch.com/images/logo-seal.png" width="72" alt="" style="display:block;margin:0 auto 10px;background:#fff;border-radius:50%;padding:4px">
   <div style="color:#fff;font:800 13px/1 Helvetica,Arial,sans-serif;letter-spacing:.22em;text-transform:uppercase">Beulah Baptist Church</div>
