@@ -79,10 +79,14 @@ const para = (s: string | null | undefined) => esc(s).split(/\n{2,}/).map((p) =>
 
 export function renderNewsletter(d: NewsletterData) {
   const theme = THEMES[d.template ?? ""] ?? THEMES[new Date().toLocaleString("en-US", { month: "long", timeZone: "America/Chicago" }).toLowerCase()] ?? THEMES.classic;
-  const section = (title: string, inner: string) => inner ? `<tr><td style="padding:22px 28px 6px"><p style="margin:0 0 12px;color:${theme.accent};font:800 12px/1 Helvetica,Arial,sans-serif;letter-spacing:.2em;text-transform:uppercase;border-bottom:2px solid ${theme.accent2};padding-bottom:8px">${title}</p>${inner}</td></tr>` : "";
+  const section = (title: string, inner: string) => inner ? `<tr><td style="padding:22px 16px 6px"><p style="margin:0 0 12px;color:${theme.accent};font:800 12px/1 Helvetica,Arial,sans-serif;letter-spacing:.2em;text-transform:uppercase;border-bottom:2px solid ${theme.accent2};padding-bottom:8px">${title}</p>${inner}</td></tr>` : "";
   const card = (inner: string) => `<div style="background:#fff;border-radius:12px;padding:16px 18px;margin:0 0 12px;border-left:4px solid ${theme.accent2}">${inner}</div>`;
 
-  const announcements = d.announcements.map((a) => card(`${a.image ? `<img src="${a.image}" alt="" style="width:100%;border-radius:8px;margin:0 0 12px;display:block">` : ""}<h3 style="margin:0 0 8px;color:${theme.accent};font:700 18px Georgia,serif">${esc(a.title)}</h3>${para(a.body)}${a.link ? `<a href="${a.link}" style="color:${theme.accent};font-weight:bold">Learn more &rarr;</a>` : ""}`)).join("");
+  const imageCard = (image: string, inner: string) => `<div style="background:#fff;border-radius:12px;margin:0 0 14px;overflow:hidden;border-left:4px solid ${theme.accent2}"><img src="${image}" alt="" style="width:100%;height:auto;display:block">${inner ? `<div style="padding:14px 18px 16px">${inner}</div>` : ""}</div>`;
+  const announcements = d.announcements.map((a) => {
+    const text = `<h3 style="margin:0 0 8px;color:${theme.accent};font:700 18px Georgia,serif">${esc(a.title)}</h3>${para(a.body)}${a.link ? `<a href="${a.link}" style="color:${theme.accent};font-weight:bold">Learn more &rarr;</a>` : ""}`;
+    return a.image ? imageCard(a.image, text) : card(text);
+  }).join("");
   const events = d.events.map((e) => card(`<b style="color:${theme.accent};font-family:Georgia,serif;font-size:16px">${esc(e.title)}</b><br><span style="color:#5d6a7b;font-size:14px">${esc(e.when)}${e.where ? ` &middot; ${esc(e.where)}` : ""}</span>${e.description ? `<div style="margin-top:8px;font-size:14px">${para(e.description)}</div>` : ""}`)).join("");
   const serving = d.serving.map((s) => card(`<b style="color:${theme.accent};font-family:Georgia,serif;font-size:16px">${esc(s.title)}</b><br><span style="color:#5d6a7b;font-size:14px">${s.slots ? `${s.filled} of ${s.slots} spots filled` : `${s.filled} signed up`}</span>${s.body ? `<div style="margin-top:8px;font-size:14px">${para(s.body)}</div>` : ""}<a href="${APP_URL}/serving" style="display:block;margin-top:10px;color:${theme.accent};font-weight:bold">Sign up in the app &rarr;</a>`)).join("");
   const celebrations = [...d.birthdays.map((b) => `<li>&#127874; <b>${esc(b.name)}</b> &middot; ${esc(b.day)}</li>`), ...d.anniversaries.map((a) => `<li>&#128141; <b>${esc(a.name)}</b> &middot; ${esc(a.day)}</li>`)];
@@ -91,15 +95,15 @@ export function renderNewsletter(d: NewsletterData) {
   return `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>${esc(d.subject)}</title></head>
 <body style="margin:0;background:${theme.bg};font-family:Helvetica,Arial,sans-serif;color:#16263b">
 <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:${theme.bg}"><tr><td align="center" style="padding:24px 12px">
-<table role="presentation" width="600" cellspacing="0" cellpadding="0" style="max-width:600px;width:100%;background:${theme.bg}">
-${theme.banner ? `<tr><td style="padding:0;line-height:0"><img src="https://beulahbaptistchurch.com/images/newsletter/${theme.banner}.jpg" width="600" alt="Beulah Baptist Church newsletter, ${theme.banner}" style="display:block;width:100%;height:auto;border-radius:14px 14px 0 0"></td></tr>
+<table role="presentation" width="700" cellspacing="0" cellpadding="0" style="max-width:700px;width:100%;background:${theme.bg}">
+${theme.banner ? `<tr><td style="padding:0;line-height:0"><img src="https://beulahbaptistchurch.com/images/newsletter/${theme.banner}.jpg" width="700" alt="Beulah Baptist Church newsletter, ${theme.banner}" style="display:block;width:100%;height:auto;border-radius:14px 14px 0 0"></td></tr>
 <tr><td style="background:${theme.accent};padding:16px 28px;text-align:center;border-bottom:5px solid ${theme.accent2}"><h1 style="margin:0;color:#fff;font:700 24px/1.2 Georgia,serif">${esc(d.subject)}</h1></td></tr>` : `<tr><td style="background:${theme.accent};border-radius:14px 14px 0 0;padding:28px;text-align:center;border-bottom:5px solid ${theme.accent2}">
   <img src="https://beulahbaptistchurch.com/images/logo-seal.png" width="72" alt="" style="display:block;margin:0 auto 10px;background:#fff;border-radius:50%;padding:4px">
   <div style="color:#fff;font:800 13px/1 Helvetica,Arial,sans-serif;letter-spacing:.22em;text-transform:uppercase">Beulah Baptist Church</div>
   <h1 style="margin:10px 0 0;color:#fff;font:700 28px/1.15 Georgia,serif">${esc(d.subject)}</h1>
 </td></tr>`}
-${d.intro ? `<tr><td style="padding:24px 28px 0;font-size:16px;line-height:1.6">${para(d.intro)}</td></tr>` : ""}
-${d.verse ? `<tr><td style="padding:18px 28px 0"><div style="background:#fff;border-radius:12px;padding:18px 20px;text-align:center;font:italic 17px/1.5 Georgia,serif;color:${theme.accent}">&ldquo;${esc(d.verse.text)}&rdquo;<div style="margin-top:8px;font:800 12px Helvetica,Arial,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#5d6a7b;font-style:normal">${esc(d.verse.ref)}</div></div></td></tr>` : ""}
+${d.intro ? `<tr><td style="padding:24px 20px 0;font-size:16px;line-height:1.6">${para(d.intro)}</td></tr>` : ""}
+${d.verse ? `<tr><td style="padding:18px 16px 0"><div style="background:#fff;border-radius:12px;padding:18px 20px;text-align:center;font:italic 17px/1.5 Georgia,serif;color:${theme.accent}">&ldquo;${esc(d.verse.text)}&rdquo;<div style="margin-top:8px;font:800 12px Helvetica,Arial,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#5d6a7b;font-style:normal">${esc(d.verse.ref)}</div></div></td></tr>` : ""}
 ${section("Announcements", announcements)}
 ${section("Coming up", events)}
 ${section("Serving", serving)}
