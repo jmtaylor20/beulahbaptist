@@ -3,6 +3,7 @@
 -- each announcement has a switch so members-only news stays in the app.
 -- Serving sign-ups never go public. The view runs as its owner so visitors
 -- need no login, and only exposes what the carousel shows.
+-- Applied to beulah-baptist-app on 2026-11-05.
 
 alter table announcements add column show_on_website boolean not null default true;
 
