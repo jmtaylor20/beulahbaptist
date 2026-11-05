@@ -14,16 +14,19 @@ export default function SiteLayout({ children }: Readonly<{ children: React.Reac
       <header className="site-header">
         <div className="wrap header-inner">
           <Link className="brand" href="/" aria-label="Beulah Baptist Church home">
-            <img src="/images/logo-wide.png" alt="" />
+            <img src="/images/logo-horizontal.png" width={720} height={240} alt="Beulah Baptist Church" />
           </Link>
-          <details className="mobile-menu"><summary aria-label="Open navigation">Menu</summary><nav>{nav.map(([label, href]) => <Link href={href} key={href}>{label}</Link>)}</nav></details>
-          <nav className="desktop-nav" aria-label="Main navigation">{primaryNav.map(([label, href]) => <Link href={href} key={href}>{label}</Link>)}<details className="more-menu"><summary>More <span>⌄</span></summary><div>{secondaryNav.map(([label, href]) => <Link href={href} key={href}>{label}</Link>)}</div></details></nav>
+          <nav className="desktop-nav" aria-label="Main navigation">{primaryNav.map(([label, href]) => <Link href={href} key={href}>{label}</Link>)}<details className="more-menu"><summary>More <span aria-hidden="true">⌄</span></summary><div>{secondaryNav.map(([label, href]) => <Link href={href} key={href}>{label}</Link>)}</div></details></nav>
+          <details className="mobile-menu">
+            <summary aria-label="Menu"><span className="burger" aria-hidden="true"><i /><i /><i /></span>Menu</summary>
+            <nav aria-label="Main navigation">{nav.map(([label, href]) => <Link href={href} key={href}>{label}</Link>)}</nav>
+          </details>
         </div>
       </header>
       {children}
       <footer className="site-footer">
         <div className="wrap footer-grid">
-          <div className="footer-brand"><div className="footer-mark"><img src="/images/logo-wide.png" alt="Beulah Baptist Church" /></div><p>Love God · Love People · Make Disciples</p></div>
+          <div className="footer-brand"><div className="footer-mark"><img src="/images/logo-horizontal-white.png" width={720} height={240} alt="Beulah Baptist Church" /></div><p>Love God · Love People · Make Disciples</p></div>
           <div><h3>Visit</h3><p>5891 Lovelady Road<br />Dadeville, AL 36853<br /><a href="tel:+12568256515">256-825-6515</a></p><a href="https://www.google.com/maps/search/?api=1&query=5891+Lovelady+Road+Dadeville+AL+36853" target="_blank" rel="noreferrer">Get directions ↗</a></div>
           <div><h3>Gather</h3><p>Sunday Worship · 9:00 & 11:00 AM<br />Sunday School · 10:00 AM<br />Sunday & Wednesday Nights · 6:00 PM</p></div>
           <div><h3>Explore</h3>{nav.map(([label, href]) => <Link href={href} key={href}>{label}</Link>)}</div>

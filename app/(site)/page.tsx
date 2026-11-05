@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { UpcomingEvents } from "./UpcomingEvents";
+import { Highlights } from "./Highlights";
 import { ContactForm } from "./ui";
 import { EventPopup } from "./EventPopup";
 import { canonical } from "../site-url";
@@ -29,8 +29,9 @@ export default function Home() {
             <Link className="button ghost" href="#service-times">Service times</Link>
           </div>
         </div>
-        <a className="scroll-cue" href="#welcome" aria-label="Continue to welcome message">↓</a>
       </section>
+
+      <Highlights />
 
       <section id="welcome" className="section welcome-grid wrap">
         <div>
@@ -47,7 +48,6 @@ export default function Home() {
       <section id="service-times" className="info-band">
         <div className="wrap info-grid">
           <div className="info-intro">
-            <span className="icon-circle">S</span>
             <p className="eyebrow light">Gather with us</p>
             <h2>Sundays & Wednesdays</h2>
           </div>
@@ -57,7 +57,6 @@ export default function Home() {
             <div className="schedule-day"><h3>Wednesday nights</h3><p><span>Feed the Sheep</span><strong>5:30 PM</strong></p><p><span>Classes <small>Youth, AWANA & adults</small></span><strong>6:00 PM</strong></p></div>
           </div>
           <div className="location-card">
-            <span className="pin">●</span>
             <h3>Find us in Dadeville</h3>
             <p>5891 Lovelady Road<br />Dadeville, AL 36853</p>
             <p><a href="tel:+12568256515">256-825-6515</a></p>
@@ -81,8 +80,6 @@ export default function Home() {
           ))}
         </div>
       </section>
-
-      <UpcomingEvents limit={4} />
 
       <section className="split-feature">
         <div className="split-image worship-image" role="img" aria-label="Beulah Baptist Church at sunset" />
