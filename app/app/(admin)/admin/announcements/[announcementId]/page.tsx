@@ -17,7 +17,7 @@ export default async function AnnouncementAdmin({ params, searchParams }: { para
   const supabase = await supabaseServer();
   const { data } = isNew ? { data: null } : await supabase.from("announcements").select("*,people!submitted_by(first_name,last_name),serving_signups(note,people(first_name,last_name))").eq("id", announcementId).maybeSingle();
   if (!isNew && !data) notFound();
-  const a = data ?? { id: "", kind: sp.kind === "serving" ? "serving" : "announcement", title: "", body: "", body_original: null, image_path: null, link_url: "", starts_on: "", ends_on: "", slots: null, status: "draft", people: null, serving_signups: [] };
+  const a = data ?? { id: "", kind: sp.kind === "serving" ? "serving" : "announcement", title: "", body: "", body_original: null, image_path: null, link_url: "", starts_on: "", ends_on: "", slots: null, show_on_website: true, status: "draft", people: null, serving_signups: [] };
   const by = a.people as unknown as { first_name: string; last_name: string } | null;
   const changed = !!a.body_original && a.body_original !== a.body;
   const signups = (a.serving_signups ?? []) as { note: string | null; people: { first_name: string; last_name: string } | null }[];
@@ -47,6 +47,7 @@ export default async function AnnouncementAdmin({ params, searchParams }: { para
           <label>Picture or flyer<PhotoInput name="image" /></label>
           <label>Link<input name="link_url" type="url" defaultValue={a.link_url ?? ""} placeholder="https://" /></label>
           <div className="row"><label>Show from<input name="starts_on" type="date" defaultValue={a.starts_on ?? ""} /></label><label>Until<input name="ends_on" type="date" defaultValue={a.ends_on ?? ""} /><span className="hint">Drops out of the app and email after this date.</span></label></div>
+          <label className="check"><input type="checkbox" name="show_on_website" defaultChecked={a.show_on_website ?? true} /> Show on church website <span className="hint">Approved announcements appear in the carousel at the top of the home page. Untick for members-only news. Serving sign-ups never show.</span></label>
           <label>Spots needed (serving only)<input name="slots" type="number" min={1} defaultValue={a.slots ?? ""} /></label>
           <label>Status<select name="status" defaultValue={a.status}><option value="suggested">Suggested</option><option value="draft">Draft</option><option value="approved">Approved (live)</option><option value="archived">Archived</option></select></label>
         </section>

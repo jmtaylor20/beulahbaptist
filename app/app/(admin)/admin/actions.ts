@@ -119,7 +119,7 @@ export async function saveAnnouncement(form: FormData) {
     const image_path = await upload("public-media", "announcements/admin", form.get("image") as File | null);
     const row = {
       kind: text(form, "kind") === "serving" ? "serving" : "announcement", title: text(form, "title"), body: opt(form, "body"), link_url: opt(form, "link_url"),
-      starts_on: opt(form, "starts_on"), ends_on: opt(form, "ends_on"), slots: Number(text(form, "slots")) || null,
+      starts_on: opt(form, "starts_on"), ends_on: opt(form, "ends_on"), slots: Number(text(form, "slots")) || null, show_on_website: on(form, "show_on_website"),
       status: form.get("approve") ? "approved" : text(form, "status") || "draft",
       ...(image_path ? { image_path } : {}),
     };
