@@ -108,7 +108,7 @@ function Card({ slide: s, index, total }: { slide: Slide; index: number; total: 
         <span className={`hl-badge ${s.kind}`}>{s.kind === "event" ? "Event" : "Announcement"}</span>
       </div>
       <div className="hl-body">
-        <p className="hl-label">{s.label}</p>
+        {s.label && <p className="hl-label">{s.label}</p>}
         <h3>{s.title}</h3>
         {s.meta && <p className="hl-meta">{s.meta}</p>}
         {s.copy && <p className="hl-copy">{s.copy}</p>}

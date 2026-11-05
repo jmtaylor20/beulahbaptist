@@ -289,9 +289,10 @@ p { margin:0 0 1.2em; }
 .highlights-track:focus-visible { outline:3px solid rgb(75 148 203 / .35); outline-offset:2px; border-radius:10px; }
 .hl-card { scroll-snap-align:start; display:flex; flex-direction:column; min-width:0; background:white; border:1px solid #e7e1d6; border-radius:12px; overflow:hidden; box-shadow:0 6px 20px rgb(13 39 65 / .07); transition:transform .25s ease, box-shadow .25s ease; color:inherit; }
 a.hl-card:hover { transform:translateY(-4px); box-shadow:0 16px 34px rgb(13 39 65 / .14); }
-.hl-media { position:relative; aspect-ratio:16/10; overflow:hidden; background:var(--navy); }
+.hl-media { position:relative; flex:1 0 auto; min-height:220px; overflow:hidden; background:var(--navy); }
+.hl-media > img { position:absolute; }
 .hl-media-bg { position:absolute; inset:-20px; width:calc(100% + 40px); height:calc(100% + 40px); max-width:none; object-fit:cover; filter:blur(18px) brightness(.75); }
-.hl-media-img { position:relative; width:100%; height:100%; object-fit:contain; }
+.hl-media-img { inset:0; width:100%; height:100%; object-fit:contain; }
 .hl-media-plain { display:grid; place-items:center; background:radial-gradient(circle at 80% 10%, rgb(241 189 94 / .45), transparent 50%), linear-gradient(135deg, #0b3c6d, #3a85c3); }
 .hl-date-big { display:grid; place-items:center; color:white; line-height:1; }
 .hl-date-big small { color:#f2c467; font-size:.8rem; font-weight:800; letter-spacing:.2em; text-transform:uppercase; }
@@ -299,7 +300,7 @@ a.hl-card:hover { transform:translateY(-4px); box-shadow:0 16px 34px rgb(13 39 6
 .hl-mark img { width:min(64%, 230px); margin-inline:auto; opacity:.95; }
 .hl-badge { position:absolute; top:12px; left:12px; padding:5px 11px; border-radius:999px; background:var(--gold); color:var(--navy); font-size:.62rem; font-weight:800; letter-spacing:.12em; text-transform:uppercase; box-shadow:0 4px 12px rgb(0 0 0 / .18); }
 .hl-badge.event { background:white; }
-.hl-body { display:flex; flex-direction:column; flex:1; padding:18px 20px 20px; }
+.hl-body { display:flex; flex-direction:column; padding:18px 20px 20px; }
 .hl-label { margin:0 0 6px; color:var(--blue); font-size:.72rem; font-weight:800; letter-spacing:.1em; text-transform:uppercase; }
 .hl-body h3 { margin:0 0 6px; font-size:1.3rem; line-height:1.15; }
 .hl-meta { margin:0 0 8px; color:var(--navy-2); font-size:.86rem; font-weight:700; }

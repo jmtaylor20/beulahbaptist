@@ -17,8 +17,10 @@ export async function upcomingPublicEvents(limit = 6): Promise<PublicEvent[]> {
   const supabase = publicClient();
   if (!supabase) return [];
   try {
-    const { data } = await supabase.from("public_events").select("*").order("starts_at").limit(limit);
-    return (data ?? []) as PublicEvent[];
+    // Ask for a few extra: the view keeps yesterday's events, and those that
+    // have already finished are dropped here.
+    const { data } = await supabase.from("public_events").select("*").order("starts_at").limit(limit + 5);
+    return ((data ?? []) as PublicEvent[]).filter((e) => !hasEnded(e)).slice(0, limit);
   } catch {
     return [];
   }
@@ -43,3 +45,12 @@ export const eventDay = (e: PublicEvent) => central(e.starts_at, { weekday: "lon
 export const eventTime = (e: PublicEvent) => e.all_day ? "All day" : `${central(e.starts_at, { hour: "numeric", minute: "2-digit" })}${e.ends_at ? ` to ${central(e.ends_at, { hour: "numeric", minute: "2-digit" })}` : ""}`;
 export const eventMonth = (e: PublicEvent) => central(e.starts_at, { month: "short" });
 export const eventDate = (e: PublicEvent) => central(e.starts_at, { day: "numeric" });
+
+// An event is over once its end time passes; with no end time, two hours
+// after it starts; all-day events last through the end of their day.
+const dayKey = (d: Date) => d.toLocaleDateString("en-CA", { timeZone: "America/Chicago" });
+export function hasEnded(e: PublicEvent, now = new Date()) {
+  if (e.all_day) return dayKey(new Date(e.ends_at ?? e.starts_at)) < dayKey(now);
+  const end = e.ends_at ? new Date(e.ends_at) : new Date(new Date(e.starts_at).getTime() + 2 * 3600_000);
+  return end < now;
+}
