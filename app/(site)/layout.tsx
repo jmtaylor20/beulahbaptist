@@ -32,6 +32,7 @@ export default function SiteLayout({ children }: Readonly<{ children: React.Reac
           <div><h3>Explore</h3>{nav.map(([label, href]) => <Link href={href} key={href}>{label}</Link>)}</div>
         </div>
         <div className="wrap footer-bottom"><span>© {new Date().getFullYear()} Beulah Baptist Church</span><span>Southern Baptist · Tallapoosa Baptist Association</span></div>
+        <div className="wrap" style={{ marginTop: "14px", fontSize: "12px", opacity: 0.6, color: "#7790a7" }}>Designed and managed by <a href="https://taylormadegrowth.com" style={{ display: "inline", color: "inherit", margin: 0, textDecoration: "underline" }}>TaylorMade Brands, LLC</a></div>
       </footer>
     </>
   );
