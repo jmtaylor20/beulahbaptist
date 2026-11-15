@@ -32,6 +32,7 @@ export async function updateProfile(form: FormData) {
       email: opt(form, "email"), phone: opt(form, "phone"), birthday: opt(form, "birthday"), photo_path,
       show_email: vis(form, "show_email"), show_phone: vis(form, "show_phone"), show_birthday: vis(form, "show_birthday"), show_address: vis(form, "show_address"),
       bible_translation: text(form, "bible_translation") || person.bible_translation,
+      profile_completed_at: person.profile_completed_at ?? new Date().toISOString(),
     }).eq("id", person.id);
     if (error) throw new Error(error.message);
     if (person.household_id && form.has("address")) {
@@ -42,7 +43,7 @@ export async function updateProfile(form: FormData) {
   } catch (e) {
     bounce(`${b}/profile`, { error: (e as Error).message });
   }
-  bounce(`${b}/profile`, { ok: "Profile saved." });
+  bounce(person.profile_completed_at ? `${b}/profile` : b || "/", { ok: person.profile_completed_at ? "Profile saved." : "Thank you! Your family is set up. Welcome to the app." });
 }
 
 // Family members share the household login. They are people rows with no

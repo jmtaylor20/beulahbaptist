@@ -1,11 +1,16 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { base, fmtDate, fmtTime, monthDay, publicMediaUrl, requireMember } from "../../../lib/members";
 import { supabaseServer } from "../../../lib/supabase/server";
 import { todaysReading } from "../../../lib/devotion";
+import { Notice } from "../ui";
 
-export default async function Home() {
+export default async function Home({ searchParams }: { searchParams: Promise<{ ok?: string; error?: string }> }) {
+  const sp = await searchParams;
   const person = await requireMember();
   const b = await base();
+  // First visit after approval: start with the family page.
+  if (!person.profile_completed_at) redirect(`${b}/profile?welcome=1`);
   const supabase = await supabaseServer();
   const today = new Date().toISOString().slice(0, 10);
   const [{ data: announcements }, { data: events }, { data: prayers }, { data: birthdays }] = await Promise.all([
@@ -26,6 +31,7 @@ export default async function Home() {
     <>
       <p className="eyebrow">{fmtDate(new Date().toISOString(), { weekday: "long", month: "long", day: "numeric" })}</p>
       <h1>Welcome, {person.first_name}.</h1>
+      <Notice searchParams={sp} />
 
       <div className="ma-grid tiles" style={{ marginBottom: 18 }}>
         <Link className="ma-tile" href={`${b}/directory`}><span>👥</span><strong>Directory</strong><small>Find a church family</small></Link>

@@ -34,7 +34,7 @@ function MemberFields({ m, last }: { m?: Person; last: string }) {
   );
 }
 
-export default async function Profile({ searchParams }: { searchParams: Promise<{ ok?: string; error?: string }> }) {
+export default async function Profile({ searchParams }: { searchParams: Promise<{ ok?: string; error?: string; welcome?: string }> }) {
   let person = await requireMember();
   const b = await base();
   const supabase = await supabaseServer();
@@ -57,6 +57,13 @@ export default async function Profile({ searchParams }: { searchParams: Promise<
 
   return (
     <>
+      {!person.profile_completed_at && (
+        <section className="ma-card navy" style={{ marginBottom: 18 }}>
+          <p className="eyebrow light">Welcome to the Beulah family app</p>
+          <h2>Start here: set up your family</h2>
+          <p style={{ margin: 0 }}>Check your own details below, add your spouse and children with their email and phone, choose what other members can see, and press <b>Save</b>. The weekly email goes to every address you add. You can change any of it later from More, Your family.</p>
+        </section>
+      )}
       <h1>Your family</h1>
       <p className="ma-lead">One login for your whole household. The church office keeps the full record; you choose what other members can see about each of you. Birthdays show as month and day only.</p>
       <Notice searchParams={sp} />

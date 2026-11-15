@@ -16,7 +16,7 @@ export type Person = {
   role: "head" | "spouse" | "child" | "other"; is_minor: boolean; photo_path: string | null; bio: string | null;
   show_email: "members" | "church"; show_phone: "members" | "church"; show_birthday: "members" | "church"; show_address: "members" | "church";
   bible_translation: string; status: "pending" | "active" | "inactive" | "declined"; is_admin: boolean;
-  request_note: string | null; admin_notes: string | null; created_at: string;
+  request_note: string | null; admin_notes: string | null; profile_completed_at: string | null; created_at: string;
 };
 
 export type Household = {
