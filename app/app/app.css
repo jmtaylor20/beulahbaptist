@@ -80,7 +80,7 @@
 .ma-ok { padding:12px 14px; background:#dff3e4; color:#1b5e2f; border-radius:10px; font-size:.9rem; }
 .ma-empty { padding:28px; text-align:center; color:var(--muted); background:white; border-radius:12px; }
 
-.ma-auth { min-height:100dvh; display:grid; place-items:center; padding:24px 16px; background:linear-gradient(160deg, #041e39, #0b4176); }
+.ma-auth { min-height:100dvh; display:grid; place-items:center; padding:calc(24px + env(safe-area-inset-top)) 16px calc(24px + env(safe-area-inset-bottom)); background:linear-gradient(160deg, #041e39, #0b4176); }
 .ma-auth-card { width:min(440px, 100%); background:var(--paper); border-radius:16px; padding:28px 24px; border-top:4px solid var(--gold); box-shadow:0 24px 70px rgb(0 0 0 / .35); }
 .ma-auth-card img { width:96px; margin:0 auto 10px; }
 .ma-auth-card h1 { text-align:center; font-size:1.7rem; }

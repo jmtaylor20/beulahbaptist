@@ -2,6 +2,7 @@
 import { redirect } from "next/navigation";
 import { base, centralToIso, requireMember } from "../../../lib/members";
 import { supabaseServer } from "../../../lib/supabase/server";
+import { eventWhen, notifyMembers } from "../../../lib/push";
 
 const text = (form: FormData, key: string) => String(form.get(key) ?? "").trim();
 const opt = (form: FormData, key: string) => text(form, key) || null;
@@ -107,7 +108,12 @@ export async function addPrayer(form: FormData) {
   const body = text(form, "body");
   if (!body) bounce(`${b}/prayer`, { error: "Write your request first." });
   const supabase = await supabaseServer();
-  await supabase.from("prayer_requests").insert({ person_id: person.id, body, audience: text(form, "audience") === "pastor" ? "pastor" : "church", newsletter_ok: form.get("newsletter_ok") === "on" });
+  const audience = text(form, "audience") === "pastor" ? "pastor" : "church";
+  const { error } = await supabase.from("prayer_requests").insert({ person_id: person.id, body, audience, newsletter_ok: form.get("newsletter_ok") === "on" });
+  // Pastor-only requests are never announced. The request text stays off the
+  // lock screen; members read it on the prayer wall.
+  if (!error && audience === "church")
+    await notifyMembers({ title: "New prayer request", body: `${person.first_name} shared a prayer request. Tap to pray with them.`, path: "/prayer" }, person.id);
   bounce(`${b}/prayer`, { ok: text(form, "audience") === "pastor" ? "Sent to the pastor." : "Your request is on the prayer wall." });
 }
 
@@ -157,10 +163,13 @@ export async function suggestEvent(form: FormData) {
   const supabase = await supabaseServer();
   const date = text(form, "date"), time = text(form, "time");
   if (!text(form, "title") || !date) bounce(`${b}/calendar`, { error: "A title and date are needed." });
-  await supabase.from("events").insert({
+  const event = {
     title: text(form, "title"), description: opt(form, "description"), location: opt(form, "location"),
     starts_at: centralToIso(`${date}T${time || "12:00"}`), all_day: !time, status: person.is_admin ? "approved" : "suggested", submitted_by: person.id,
-  });
+  };
+  const { error } = await supabase.from("events").insert(event);
+  if (!error && event.status === "approved")
+    await notifyMembers({ title: `New event: ${event.title}`, body: eventWhen(event), path: "/calendar" }, person.id);
   bounce(`${b}/calendar`, { ok: person.is_admin ? "Event added." : "Thanks. The church office will review your suggestion." });
 }
 
