@@ -11,7 +11,7 @@ export async function signIn(form: FormData) {
   const supabase = await supabaseServer();
   const { error } = await supabase.auth.signInWithPassword({ email: text(form, "email"), password: text(form, "password") });
   if (error) bounce(`${b}/login`, { error: "That email and password did not match." });
-  await ensurePerson(); // signup cannot create the people row while email confirmation is on
+  await ensurePerson(); // backstop for logins created before email confirmation was turned off
   const { data: me } = await supabase.from("people").select("is_admin,status").eq("auth_user_id", (await supabase.auth.getUser()).data.user!.id).maybeSingle();
   redirect(me?.is_admin && me.status === "active" ? `${b}/choose` : b || "/");
 }
@@ -37,14 +37,15 @@ export async function requestAccess(form: FormData) {
   const { data, error } = await supabase.auth.signUp({ email, password, options: { data: { first_name: first, last_name: last, phone: text(form, "phone"), request_note: text(form, "request_note"), family_name: text(form, "family_name") } } });
   if (error || !data.user) {
     const m = error?.message ?? "";
-    const friendly = /security purposes|rate limit|after \d+ seconds/i.test(m) ? "We just sent you a confirmation email. Check your inbox (and spam folder), then wait a minute before trying again."
+    const friendly = /security purposes|rate limit|after \d+ seconds/i.test(m) ? "Too many sign-up attempts just now. Please wait a minute and try again."
       : /already registered|already exists/i.test(m) ? "That email already has a login. Try signing in, or use Forgot password."
       : m || "Could not create your account.";
     bounce(`${b}/signup`, { error: friendly });
   }
 
-  // With email confirmation on, there is no session yet; the rows are
-  // created on first sign-in instead (see ensurePerson).
+  // Email confirmation is off in Supabase, so signUp returns a session and the
+  // pending people row is created right away. (If it is ever turned back on,
+  // there is no session here and ensurePerson runs at first sign-in instead.)
   if (data.session) await ensurePerson();
   redirect(`${b}/pending`);
 }

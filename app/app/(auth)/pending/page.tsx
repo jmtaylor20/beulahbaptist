@@ -16,7 +16,7 @@ export default async function Pending() {
         <img src="/images/logo-seal.png" alt="" />
         <h1>{declined ? "Request not approved" : "Request received"}</h1>
         {!person ? (
-          <p className="ma-lead">Check your email for a confirmation link, then sign in. Your request goes to the church office once your email is confirmed.</p>
+          <p className="ma-lead">Your request was received. Sign in with the email and password you just chose, and the church office will review it.</p>
         ) : declined ? (
           <p className="ma-lead">The church office was not able to approve this account. If you think that is a mistake, call the church at 256-825-6515.</p>
         ) : (

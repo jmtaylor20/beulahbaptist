@@ -5,6 +5,7 @@ import { base, centralToIso, fmtDate, fmtTime, monthDay, publicMediaUrl, require
 import { supabaseServer } from "../../../../lib/supabase/server";
 import { approvalEmail, renderNewsletter, sendBulk, sendEmail, type NewsletterData } from "../../../../lib/email";
 import { polishAnnouncement } from "../../../../lib/polish";
+import { eventWhen, notifyMembers } from "../../../../lib/push";
 
 const text = (form: FormData, key: string) => String(form.get(key) ?? "").trim();
 const opt = (form: FormData, key: string) => text(form, key) || null;
@@ -195,11 +196,19 @@ export async function saveEvent(form: FormData) {
     if (!row.title || !row.starts_at) throw new Error("A title and a date are needed.");
     if (row.ends_at && row.ends_at < row.starts_at) throw new Error("The end time is before the start time.");
     if (id) {
+      const { data: before } = await supabase.from("events").select("status,starts_at,ends_at,location").eq("id", id).maybeSingle();
       const { error } = await supabase.from("events").update(row).eq("id", id);
       if (error) throw new Error(error.message);
+      // Push: newly approved → "New event"; an approved event that moved → "Calendar update".
+      if (row.status === "approved" && before) {
+        if (before.status !== "approved") await notifyMembers({ title: `New event: ${row.title}`, body: eventWhen(row), path: "/calendar" });
+        else if (before.starts_at !== row.starts_at || before.ends_at !== row.ends_at || (before.location ?? null) !== row.location)
+          await notifyMembers({ title: `Calendar update: ${row.title}`, body: `Now ${eventWhen(row)}`, path: "/calendar" });
+      }
     } else {
       const { data, error } = await supabase.from("events").insert(row).select("id").single();
       if (error) throw new Error(error.message);
+      if (row.status === "approved") await notifyMembers({ title: `New event: ${row.title}`, body: eventWhen(row), path: "/calendar" });
       bounce(`${b}/admin/events/${data.id}`, { ok: "Created." });
     }
   } catch (e) {

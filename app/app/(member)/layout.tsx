@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { cookies } from "next/headers";
+import { savePushDevice } from "../../../lib/push";
 import { base, fullName, photoUrl, requireMember } from "../../../lib/members";
 import { Avatar } from "../ui";
 import { NavLinks } from "./NavLinks";
@@ -6,6 +8,9 @@ import { NavLinks } from "./NavLinks";
 export default async function MemberShell({ children }: { children: React.ReactNode }) {
   const person = await requireMember();
   const b = await base();
+  // Set by the Beulah Members iPhone app; links this phone to the signed-in member for push notifications.
+  const pushToken = (await cookies()).get("beulah_push_token")?.value;
+  if (pushToken && person.status === "active") await savePushDevice(person.id, pushToken);
   const photo = await photoUrl(person.photo_path);
   return (
     <div className="ma">
